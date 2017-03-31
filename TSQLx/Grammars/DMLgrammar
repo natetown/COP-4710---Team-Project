@@ -1,0 +1,23 @@
+// LL(1) Grammar for parsing DML
+
+Command -> Insert | Delete | Select | Convert
+Insert -> INSERT INTO tablename Field VALUES ( Literals ) ;  // tablename is a token
+Field -> afield Fieldlist
+Fieldlist -> , afield Fieldlist | empty
+Literal -> Aliteral Literallist
+Aliteral -> number | String
+Literallist -> , Aliteral Literallist | empty
+WhereClause -> WHERE Condition | empty
+Delete -> DELETE FROM tablename Whereclause ;
+Condition -> Field relop FL
+FL -> Field | Aliteral
+Relop -> < | <= | = | >= | > | !=       // relational operators and '=' (for equijoins)
+Select -> Normal | Temporal
+Normal -> SELECT Columns FROM tablename ;
+Columns -> * | Field
+Temporal -> tSELECT Columns FROM tablename Whereclause ;
+String -> ' stringliteral '
+Convert -> CONVERT XML Xmlfilename Xsd as Outputfile ;
+Xsd -> , XSD filename | empty
+Xmlfilename -> string . xml
+Outputfile -> string . txt
