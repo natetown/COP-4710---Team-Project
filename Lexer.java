@@ -17,7 +17,9 @@ public class Lexer{
         FROM("FROM|from"), INTO("INTO|into"), VALUES("VALUES|values"), AS("AS|as"),
         ASTK("\\*"), SELECT("SELECT|select"), TSELECT("TSELECT|tselect"), 
         RELOP("<=|>=|!=|="), WHERE("WHERE|where"), STRING("STRING|string"),
-        INTEGER("INT|int"),XSD("XSD|xsd"), XML("XML|xml"), DOT("\\."),TXT("TXT|txt"), SEMICOLON(";"),
+        DECIMAL("(\\d+\\.\\d+)"),INTEGER("INT|int"), DEC("DECIMAL|decimal"), STRLITERAL("'(.*?)'"),
+       LBRACK("\\["),RBRACK("\\]"),
+        XSD("XSD|xsd"), XML("XML|xml"), DOT("\\."),TXT("TXT|txt"), SEMICOLON(";"),
         DATE("(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])-([19|20]?\\d{2,})"),NUMBER("-?[0-9]+"),ID("\\p{Alpha}+[[_]?\\p{Alnum}]?"),  ERROR(".+");  //ID("[\\w]+_"),
         
     
@@ -111,7 +113,7 @@ public class Lexer{
                 strIndex = matcher.end(); continue;
             }else if (matcher.group(TokenType.LPAREN.name()) != null){
                 tokens.add(new Token(TokenType.LPAREN, matcher.group(TokenType.LPAREN.name())));
-            	strIndex = matcher.end()+1;
+            	strIndex = matcher.end();
                 continue;
             }else if (matcher.group(TokenType.RPAREN.name()) != null){
                 tokens.add(new Token(TokenType.RPAREN, matcher.group(TokenType.RPAREN.name())));
@@ -146,6 +148,28 @@ public class Lexer{
             }else if (matcher.group(TokenType.INTEGER.name()) != null){
                 tokens.add(new Token(TokenType.INTEGER, matcher.group(TokenType.INTEGER.name())));
                 strIndex = matcher.end(); continue;
+            }else if (matcher.group(TokenType.DEC.name()) != null){
+                tokens.add(new Token(TokenType.DEC, matcher.group(TokenType.DEC.name())));
+                strIndex = matcher.end(); continue;
+            }else if (matcher.group(TokenType.STRLITERAL.name()) != null){
+                tokens.add(new Token(TokenType.STRLITERAL, matcher.group(TokenType.STRLITERAL.name())));
+                strIndex = matcher.end(); continue;
+       }else if (matcher.group(TokenType.DECIMAL.name()) != null){
+                tokens.add(new Token(TokenType.DECIMAL, matcher.group(TokenType.DECIMAL.name())));
+                strIndex = matcher.end(); continue;
+           
+            
+                    
+                }else if (matcher.group(TokenType.LBRACK.name()) != null){
+                tokens.add(new Token(TokenType.LBRACK, matcher.group(TokenType.LBRACK.name())));
+                strIndex = matcher.end(); continue; 
+                        
+            }else if (matcher.group(TokenType.RBRACK.name()) != null){
+                tokens.add(new Token(TokenType.RBRACK, matcher.group(TokenType.RBRACK.name())));
+                strIndex = matcher.end(); continue;
+                
+                
+                  
             }else if (matcher.group(TokenType.XSD.name()) != null){
                 tokens.add(new Token(TokenType.XSD, matcher.group(TokenType.XSD.name())));
                 strIndex = matcher.end(); continue; 
