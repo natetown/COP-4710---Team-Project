@@ -1,0 +1,32 @@
+Sample output for UserInput: 
+ String userInput = "(987 09-12-99  09-12-1999 CREATE; create TABLE ( field1 , field2, field3 ) table *FROM lkjjk2343 INTO into CONVERT convert , CREATE create";
+
+
+
+LPAREN --> (
+NUMBER --> 987
+DATE --> 09-12-99
+DATE --> 09-12-1999
+CREATE --> CREATE
+SEMICOLON --> ;
+CREATE --> create
+TABLE --> TABLE
+LPAREN --> (
+ID --> field1
+COMMA --> ,
+ID --> field2
+COMMA --> ,
+ID --> field3
+RPAREN --> )
+TABLE --> table
+ASTK --> *
+FROM --> FROM
+ID --> lkjjk2
+NUMBER --> 343
+INTO --> INTO
+INTO --> into
+CONVERT --> CONVERT
+CONVERT --> convert
+COMMA --> ,
+CREATE --> CREATE
+CREATE --> create

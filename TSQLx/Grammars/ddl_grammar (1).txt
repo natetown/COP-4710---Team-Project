@@ -1,0 +1,16 @@
+DDL Grammar
+
+Stmt -> CREATE cstmt|| DROP dstmt
+cstmt -> database dname; || table tname tdec;
+dstmt -> database dname; || table tname;
+tdec -> (collist)
+collist -> col collistA
+collistA -> , col || @
+col -> colname coltype 
+coltype -> int iL || dec dL || text sL || date
+iL -> (#)
+dL -> (#, #)
+sL -> (#)
+date -> (mm-dd-yyyy)
+# -> positive integer
+@ -> empty
