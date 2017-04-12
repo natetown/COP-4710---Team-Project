@@ -7,6 +7,10 @@ package tsqlx;
  *
  * @author kbp7
  */
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.*;
 import java.util.Queue;
 
 public class DML {
@@ -14,8 +18,20 @@ public class DML {
     static String[] tokens;
     static Queue commands;
     
-    public static void DMLstart(String[] theTokens) {
-        tokens = theTokens;
+    public static void DMLstart(File lexfile) throws IOException {
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(lexfile));
+            String line;
+            tokens = new String[500];
+            for (int i=0; ((line = br.readLine()) != null); i++) {
+                tokens[i] = line;
+            }
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+       
         //for now, only accepting 1 query at a time
         command();
         //commandList();
