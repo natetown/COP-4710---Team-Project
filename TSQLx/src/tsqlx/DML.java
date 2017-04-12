@@ -7,40 +7,45 @@ package tsqlx;
  *
  * @author kbp7
  */
+import java.util.Queue;
+
 public class DML {
     static int currentToken;
     static String[] tokens;
+    static Queue commands;
     
     public static void DMLstart(String[] theTokens) {
         tokens = theTokens;
-        commandList();
+        //for now, only accepting 1 query at a time
+        command();
+        //commandList();
         System.out.println("ACCEPTED");
+        //do something with it
     }
     public static void commandList()  {
-        command();
-        commandList();
+        //if we allow multiple SQL queries at once, use this
+        if(tokens[currentToken]!= null) {
+            command();
+            commandList();
+        }
     }
     public static void command()    {
         
         currentToken = 0;
         if(tokens[currentToken].contains("INSERT -->"))   {
-            //currentToken++;
             insert();
         }
         else if(tokens[currentToken].contains("DELETE -->"))   {
-            //currentToken++;
             delete();
         }
         else if(tokens[currentToken].contains("SELECT -->"))   {
-            //currentToken++;
             select();
         }
         else if(tokens[currentToken].contains("CONVERT-->"))   {
-            //currentToken++;
             convert();
         }
         else    {
-            System.out.println("ERROR: command not recognized");
+            rejected("ERROR: command not recognized");
         }
     }
     //--------------------------------------------------------------------------
@@ -189,6 +194,7 @@ public class DML {
             field();
             relop();
             FL();
+            AndOr();
         }
         else rejected("ERROR: Missing condition");
     }
@@ -200,6 +206,17 @@ public class DML {
         else aLiteral();
     }
     //--------------------------------------------------------------------------
+    public static void AndOr()  {
+        if(tokens[currentToken].contains("AND"))    {
+            currentToken++;
+            condition();
+        }
+        if(tokens[currentToken].contains("OR"))    {
+            currentToken++;
+            condition();
+        }
+        //or empty
+    }
     public static void relop() {
         if(isRelop(tokens[currentToken]))   {
             currentToken++;
@@ -208,6 +225,7 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static boolean isRelop(String x) {
+        //returns true if token is relational operator
         switch (x) {
             case "<=":
                 return true;
@@ -223,6 +241,7 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void select() {
+        //type of select statement
         if(tokens[currentToken].contains("tSELECT -->")) {
             temporal();
         }
