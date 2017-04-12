@@ -8,8 +8,6 @@ The parser will use these methods to create query objects that will be passed
 to another method that will execute the queries based on which fields are
 present in the object. 
 
-ArrayLists will hold multiple attributets.
-
  */
 import java.util.*;
 
