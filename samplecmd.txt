@@ -1,0 +1,12 @@
+CREATE DATABASE databaseName
+DROP DATABASE databaseName
+SAVE DATABASE databaseName
+LOAD DATABASE databaseName
+CREATE TABLE
+DROP TABLE
+INSERT INTO
+CONVERT XML filename
+INPUT 	insertfilename
+DELETE FROM tableName
+SELECT*FROM  tableName
+TSELECT *FROM tableName
