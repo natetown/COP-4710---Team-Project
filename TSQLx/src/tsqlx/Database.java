@@ -43,6 +43,8 @@ static final String outputEncoding = "UTF-8";
 
 public Document convert(String xmlFileName, String xsdFileName) {
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+   dbf.setIgnoringComments(true);
+   dbf.setIgnoringElementContentWhitespace(true);
          if (xsdFileName.endsWith(".xsd")) {
 
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -188,15 +190,34 @@ if(node.getNextSibling()==null){
 	return null;
 }
 node=node.getNextSibling();
-
 }
 return null;
 }
 
-static void printDatabase(Node DOM){
+public static void createDatabase(String databaseName){
+   DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+   dbf.setIgnoringComments(true);
+   dbf.setIgnoringElementContentWhitespace(true);
+   try{  
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, outputEncoding);
+            db.setErrorHandler(new MyErrorHandler(new PrintWriter(errorWriter)));
+            Document doc = db.newDocument();
+            Element database = doc.createElement(databaseName);
+            doc.appendChild(database);
+            System.out.println(doc.getFirstChild());
+            printDatabase(doc);
+            } catch(Exception ex){
+            System.out.println(ex.getMessage());
+            }
+
+}
+
+
+static void printDatabase(Document DOM){
 try {
     String databaseName = DOM.getFirstChild().getNodeName();
-    PrintWriter outputStream = new PrintWriter(databaseName+".txt");
+    PrintWriter outputStream = new PrintWriter(databaseName+".xml");
     // Use a Transformer for output
     TransformerFactory tFactory =
     TransformerFactory.newInstance();
@@ -216,6 +237,7 @@ public static void main(String[] args) {
 Database db = new Database();
 
 Node DOM = db.convert("teamInsert.xml", "");
+createDatabase("nathan");
 //db.printDatabase(DOM);
 } //end main
 
