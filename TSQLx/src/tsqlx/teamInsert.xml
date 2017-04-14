@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<Database>
+<team>
+
+<row>
+<firstName type="string">Nathan</firstName>
+<lastName type="string">Wheeler</lastName>
+<phoneNumber type="number">5487509732</phoneNumber>
+<ssn type="int">483710467</ssn>
+<birthDate>03/25/1992</birthDate>
+</row>
+<row>
+<firstName type="string">Kai</firstName>
+<lastName type="string">Twang</lastName>
+<phoneNumber type="number">2987864011</phoneNumber>
+<ssn type="int">135235646</ssn>
+<birthDate>02/15/1992</birthDate>
+</row>
+<row>
+<firstName type="string">Kevin</firstName>
+<lastName type="string">Poon</lastName>
+<phoneNumber type="number">2987598532</phoneNumber>
+<ssn type="int">425235678</ssn>
+<birthDate>12/25/1996</birthDate>
+</row>
+<row>
+<firstName type="string">Eric</firstName>
+<lastName type="string">Gurvitz</lastName>
+<phoneNumber type="number">5437598011</phoneNumber>
+<ssn type="int">346436784</ssn>
+<birthDate>06/22/1995</birthDate>
+</row>
+<row>
+<firstName type="string">Marco</firstName>
+<lastName type="string">Last Name</lastName>
+<phoneNumber type="number">2987598011</phoneNumber>
+<ssn type="int">346436784</ssn>
+<birthDate>01/11/1995</birthDate>
+</row>
+
+</team>
+</Database>
