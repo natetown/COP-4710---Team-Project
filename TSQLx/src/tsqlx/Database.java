@@ -194,7 +194,7 @@ node=node.getNextSibling();
 return null;
 }
 
-public static void createDatabase(String databaseName){
+public static Document createDatabase(String databaseName){
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
    dbf.setIgnoringComments(true);
    dbf.setIgnoringElementContentWhitespace(true);
@@ -206,15 +206,14 @@ public static void createDatabase(String databaseName){
             Element database = doc.createElement(databaseName);
             doc.appendChild(database);
             System.out.println(doc.getFirstChild());
-            printDatabase(doc);
+            return doc;
             } catch(Exception ex){
             System.out.println(ex.getMessage());
             }
-
+  return null;
 }
 
-
-static void printDatabase(Document DOM){
+public static void saveDatabase(Document DOM){
 try {
     String databaseName = DOM.getFirstChild().getNodeName();
     PrintWriter outputStream = new PrintWriter(databaseName+".xml");
@@ -236,9 +235,9 @@ try {
 public static void main(String[] args) {
 Database db = new Database();
 
-Node DOM = db.convert("teamInsert.xml", "");
-createDatabase("nathan");
-//db.printDatabase(DOM);
+Document DOM = db.convert("teamInsert.xml", "");
+Document database = createDatabase("nathan");
+db.saveDatabase(database);
 } //end main
 
 } //end Database
