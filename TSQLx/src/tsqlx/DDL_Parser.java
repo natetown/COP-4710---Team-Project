@@ -14,52 +14,33 @@ class DDL_Parser{
    static int count = 0;
    static boolean error = false; // semantic error false if no error
    static ddl_query q;
-   public static void main(ArrayList<Lexer.Token> lexer) throws IOException{ // only for testing
-      if(args.length > 0){
+  /* public static void main(ArrayList<Lexer.Token> lexer) throws IOException{ // only for testing
+    //  if(args.length > 0){
          arList_To_Array(lexer, tokens, values);
-         parse(file);
-     }
-   } // end main
+         parse(lexer);
+    // }
+   } // end main*/
    
    public static void arList_To_Array(ArrayList<Lexer.Token> mytokens, String[] arrayTknType, String[] arrayLexeme){ 
    int i; 
-   for(i=0;i < mytokens.size()-1; i++){
+   for(i=0;i < mytokens.size(); i++){
       arrayTknType[i] = mytokens.get(i).type.toString(); 
       arrayLexeme[i] = mytokens.get(i).data; }
    } // end arrayList to Array tranform
    
-   public static void parse(File f) throws IOException{ 
-         System.out.println("Start Parse");
-     //    File file = f;
-        // Scanner reader = new Scanner(file);
-       //  String s = null;
-       //  int j = 0;
-      //   while(reader.hasNextLine() == true){ // read the entire file
-       //     if(reader.hasNext() == true){
-       //        s = reader.nextLine();
-              // System.out.println(s);
-        //       lines[j] = s;
-        //       j++;
-               
-            } // end if
-         } // end while
-       /*  for(int i = 0; i < j; i++){
-            if(lines[i].contains("-->")){
-               makeToken(lines[i]);
-               makeValue(lines[i]);
-               P++;
-            }
-         }*/
+   public static void parse(ArrayList<Lexer.Token> lexer) throws IOException{ 
+        // System.out.println("Start Parse");
+         arList_To_Array(lexer, tokens, values);
          printTokens();
          P = 0;
-         if(stmt(tokens[P]) == true && error == false){
+       /*  if(stmt(tokens[P]) == true && error == false){
          
             System.out.println("Accept");
          }
          else{
             System.out.println("Reject");
          
-         }
+         }*/
    } // end parse
    public static void makeToken(String s) throws IOException{
       int i;
@@ -88,12 +69,12 @@ class DDL_Parser{
       values[P] = r;
    } // end makeValue
    
-   public static void printTokens() throws IOException{
+   public static void printTokens(){
       System.out.println("Tokens and Values");
       for(int i = 0; i < tokens.length; i++)
       {
          if(tokens[i] != null){
-            System.out.println("Token "+ tokens[i] + " Value "+ values[i]);
+            System.out.println(i + " Token "+ tokens[i] + " Value "+ values[i]);
          }   
       }
    } // end printTokens
