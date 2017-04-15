@@ -10,7 +10,7 @@
 </row>
 <row>
 <firstName type="string">Kai</firstName>
-<lastName type="string">Twang</lastName>
+<lastName type="string">Thawang</lastName>
 <phoneNumber type="number">2987864011</phoneNumber>
 <ssn type="int">135235646</ssn>
 <birthDate>02/15/1992</birthDate>

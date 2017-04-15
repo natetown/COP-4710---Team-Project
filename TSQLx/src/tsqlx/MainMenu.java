@@ -81,7 +81,7 @@ public class MainMenu {
 		      scan.close();
 		   }
 	//run lex
-	public static void runLex(String input){
+	public static ArrayList<Lexer.Token> runLex(String input){
 		ArrayList<Lexer.Token> tokens = Lexer.lex(input);
 		 BufferedWriter bw = null;
 	        FileWriter fw = null;
@@ -113,7 +113,7 @@ public class MainMenu {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+	         return tokens
 		
 	}
 	
