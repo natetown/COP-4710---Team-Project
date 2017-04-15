@@ -1,4 +1,5 @@
 // DDL Parser
+package tsqlx;
 import java.util.*;
 import java.io.*;
 /**
@@ -12,35 +13,43 @@ class DDL_Parser{
    static int P = 0;
    static int count = 0;
    static boolean error = false; // semantic error false if no error
-   public static void main(String args[]) throws IOException{ // only for testing
+   static ddl_query q;
+   public static void main(ArrayList<Lexer.Token> lexer) throws IOException{ // only for testing
       if(args.length > 0){
-         File file = new File(args[0]);
+         arList_To_Array(lexer, tokens, values);
          parse(file);
-      }
+     }
    } // end main
+   
+   public static void arList_To_Array(ArrayList<Lexer.Token> mytokens, String[] arrayTknType, String[] arrayLexeme){ 
+   int i; 
+   for(i=0;i < mytokens.size()-1; i++){
+      arrayTknType[i] = mytokens.get(i).type.toString(); 
+      arrayLexeme[i] = mytokens.get(i).data; }
+   } // end arrayList to Array tranform
    
    public static void parse(File f) throws IOException{ 
          System.out.println("Start Parse");
-         File file = f;
-         Scanner reader = new Scanner(file);
-         String s = null;
-         int j = 0;
-         while(reader.hasNextLine() == true){ // read the entire file
-            if(reader.hasNext() == true){
-               s = reader.nextLine();
+     //    File file = f;
+        // Scanner reader = new Scanner(file);
+       //  String s = null;
+       //  int j = 0;
+      //   while(reader.hasNextLine() == true){ // read the entire file
+       //     if(reader.hasNext() == true){
+       //        s = reader.nextLine();
               // System.out.println(s);
-               lines[j] = s;
-               j++;
+        //       lines[j] = s;
+        //       j++;
                
             } // end if
          } // end while
-         for(int i = 0; i < j; i++){
+       /*  for(int i = 0; i < j; i++){
             if(lines[i].contains("-->")){
                makeToken(lines[i]);
                makeValue(lines[i]);
                P++;
             }
-         }
+         }*/
          printTokens();
          P = 0;
          if(stmt(tokens[P]) == true && error == false){
@@ -153,6 +162,7 @@ class DDL_Parser{
    public static boolean cstmt(String s) throws IOException{ // determine if cstmt is true
       System.out.println("cstmt "+ s);
       if(s.equals("DATABASE")){ // create database command
+         q = new createQuery();
          P++;
          if(tokens[P].equals("ID")){
             P++;
