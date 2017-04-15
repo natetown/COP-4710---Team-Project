@@ -37,9 +37,10 @@ import org.w3c.dom.Node;
 
 class Database {
 
-static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-static final String outputEncoding = "UTF-8";
+private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+private static final String outputEncoding = "UTF-8";
+private static Set<String> databaseFileList = new HashSet<String>();
 
 public Document convert(String xmlFileName, String xsdFileName) {
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -216,7 +217,16 @@ public static Document createDatabase(String databaseName){
 public static void saveDatabase(Document DOM){
 try {
     String databaseName = DOM.getFirstChild().getNodeName();
-    PrintWriter outputStream = new PrintWriter(databaseName+".xml");
+    String databaseFileName = databaseName+".xml";
+    PrintWriter outputStream = new PrintWriter(databaseFileName);
+    //Need to check if this database exists in a list of strings. If not,
+    if(databaseFileList.contains(databaseFileName)){
+    System.out.println("Your database, " + databaseName + ", has been saved.");
+    }
+    else{
+    databaseFileList.add(databaseFileName);
+    System.out.println("Your database, " + databaseName + ", has been created.");
+    } 
     // Use a Transformer for output
     TransformerFactory tFactory =
     TransformerFactory.newInstance();
@@ -231,6 +241,32 @@ try {
     }
 }
 
+public static Document loadDatabase(String databaseName){
+   String databaseFileName=databaseName+".xml";
+   if(databaseFileList.contains(databaseFileName)){
+   //open file 
+   DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+   try{  
+               DocumentBuilder db = dbf.newDocumentBuilder();
+               OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, outputEncoding);
+               db.setErrorHandler(new MyErrorHandler(new PrintWriter(errorWriter)));
+               Document doc = db.parse(new InputSource(databaseFileName));
+               clean(doc);
+               return doc;
+   } catch(Exception se){
+      System.out.println(se.getMessage());
+   }
+   }
+   else{
+   System.out.println("This database does not exist.");
+   return null;
+   }
+   return null;
+}
+
+public static void dropDatabase(){
+
+}
 //start main
 public static void main(String[] args) {
 Database db = new Database();
@@ -238,6 +274,8 @@ Database db = new Database();
 Document DOM = db.convert("teamInsert.xml", "");
 Document database = createDatabase("nathan");
 db.saveDatabase(database);
+db.saveDatabase(database);
+database = loadDatabase("nathan");
 } //end main
 
 } //end Database
