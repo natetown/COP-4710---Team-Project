@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
-
 <Database>
 <team>
-
 <row>
 <firstName type="string">Nathan</firstName>
 <lastName type="string">Wheeler</lastName>
