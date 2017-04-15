@@ -8,8 +8,10 @@ class DDL_Parser{
 
    static String[] lines = new String[50];
    static String[] tokens = new String[100];
+   static String[] values = new String[100];
    static int P = 0;
    static int count = 0;
+   static boolean error = false; // semantic error false if no error
    public static void main(String args[]) throws IOException{ // only for testing
       if(args.length > 0){
          File file = new File(args[0]);
@@ -22,7 +24,6 @@ class DDL_Parser{
          File file = f;
          Scanner reader = new Scanner(file);
          String s = null;
-       //  String[] lines = new String[50]; // hold lines
          int j = 0;
          while(reader.hasNextLine() == true){ // read the entire file
             if(reader.hasNext() == true){
@@ -34,15 +35,15 @@ class DDL_Parser{
             } // end if
          } // end while
          for(int i = 0; i < j; i++){
-          //  System.out.print(lines[i] + " ");
             if(lines[i].contains("-->")){
-           //    System.out.print("hello\n");
                makeToken(lines[i]);
+               makeValue(lines[i]);
+               P++;
             }
          }
-    //     printTokens();
+         printTokens();
          P = 0;
-         if(stmt(tokens[P]) == true){
+         if(stmt(tokens[P]) == true && error == false){
          
             System.out.println("Accept");
          }
@@ -63,15 +64,27 @@ class DDL_Parser{
       }
       String r = s.substring(0, i - 1); // i - 1 to remove space between closing character and '-'
       tokens[P] = r;
-      P++;
    } // end makeToken
    
+   public static void makeValue(String s) throws IOException{
+      int i;
+      for(i = 0; i < s.length(); i++)
+      {
+         if(s.charAt(i) == '>')
+         {
+            break;
+         }
+      }
+      String r = s.substring(i+2); // i - 1 to remove space between closing character and '-'
+      values[P] = r;
+   } // end makeValue
+   
    public static void printTokens() throws IOException{
-      System.out.println("Tokens");
+      System.out.println("Tokens and Values");
       for(int i = 0; i < tokens.length; i++)
       {
          if(tokens[i] != null){
-            System.out.println(tokens[i]);
+            System.out.println("Token "+ tokens[i] + " Value "+ values[i]);
          }   
       }
    } // end printTokens
@@ -98,21 +111,40 @@ class DDL_Parser{
          {
             return true;
          }
-         else if(s.equals("DROP"))
-         {
-            P++;
-            if(cstmt(tokens[P]))
-            {
-               return true;
-            }
-            else{
-               return false;
-            }
-
-
+         else{
+            return false;
          }
-         else {return false;}   
-      }
+      } // end if create
+      else if(s.equals("DROP")){
+         P++;
+         if(dstmt(tokens[P]))
+         {
+            return true;
+         }
+         else{
+            return false;
+         }
+      } // end if drop
+      else if(s.equals("SAVE")){
+         P++;
+         if(slstmt(tokens[P])){
+            return true;
+         }
+         else{
+            return false;
+         }
+
+      } // end save
+      else if(s.equals("LOAD")){
+         P++;
+         if(slstmt(tokens[P])){
+            return true;
+         }
+         else{
+            return false;
+         }
+
+      } // end load
       else{
             return false;
          }
@@ -169,13 +201,83 @@ class DDL_Parser{
       }
    } // end cstmt
    
+   public static boolean dstmt(String s) throws IOException{
+      if(s.equals("DATABASE")){ // create database command
+         P++;
+         if(tokens[P].equals("ID")){
+            P++;
+            if(tokens[P] == null){
+               System.out.println("Error missing semicolon");
+                  return false;
+            }
+            if(tokens[P].equals("SEMICOLON")){ // completed database creation
+               return true;
+            }
+            else{
+               return false;
+            }
+         }
+         else{
+            return false;
+         }
+      } // end if DATABASE
+      else if(s.equals("TABLE")){
+         P++;
+         if(tokens[P].equals("ID")){
+            P++;
+            if(tokens[P] == null){
+               System.out.println("Error missing semicolon");
+               return false;
+            }
+
+            if(tokens[P].equals("SEMICOLON")){
+               return true;
+            }
+            else{
+               return false;
+            }
+         }
+         else{
+            return false;
+         }
+      } // end if table
+      else{ // reject
+         return false;
+      }
+   } // end dstmt
+   
+   public static boolean slstmt(String s) throws IOException{
+      if(s.equals("DATABASE")){
+         P++;
+         if(tokens[P].equals("ID")){
+            P++;
+            if(tokens[P] == null){
+               System.out.println("Error missing semicolon");
+               return false;
+            }
+            if(tokens[P].equals("SEMICOLON")){
+               return true;
+            }
+            else{
+               return false;
+            }
+         }
+         else{
+               return false;
+            }
+      }
+      else{
+               return false;
+            }
+   } // end slstmt
+   
    public static boolean tdec(String s) throws IOException{ // check that tdec is correct
       System.out.println("tdec "+ s);
       if(s.equals("LPAREN")){
          P++;
          if(fieldlist(tokens[P])){ // list of all fields
                if(tokens[P].equals("RPAREN")){ // must have a closing paren
-                  System.out.println(tokens[P] + " bye");
+               //   System.out.println(tokens[P] + " bye");
                   P++;
                   return true;
                }
@@ -225,6 +327,7 @@ class DDL_Parser{
          System.out.println("FieldlistA complete");
          return true;
       }
+      
       else if(s.equals("COMMA")){
          P++;
          if(field(tokens[P])){
@@ -253,12 +356,12 @@ class DDL_Parser{
       {
          P++;
          if(fieldtype(tokens[P])){
-            P++;
             if(nullA(tokens[P]))
             {
                System.out.println("field is okay");
-               count++;
-               System.out.println(count);
+             //  count++;
+              // System.out.println(count);
+             //  P++;
                return true;
             }
             else{
@@ -285,8 +388,19 @@ class DDL_Parser{
          if(tokens[P].equals("LPAREN")){
             P++;
             if(tokens[P].equals("NUMBER")){
+               if(isInteger(values[P])){
+                  P++;
+                  if(tokens[P].equals("RPAREN")){
+                     P++;
+                     return true;
+                  }
+                  else{
+                     return false;
+               }
+            }
                P++;
                if(tokens[P].equals("RPAREN")){
+                  P++;
                   return true;
                }
                else{
@@ -315,21 +429,17 @@ class DDL_Parser{
                return false;
             }
          } // end if LPAREN
-         else if(tokens[P].equals("COMMA")/* || tokens[P].equals("RPAREN")*/){ // no length
-            P--;
+         else if(tokens[P].equals("COMMA")){ // no length
             return true;
          }
          else if(tokens[P].equals("RPAREN")){
             return true;
          }
           else if(tokens[P].equals("NOT NULL")){
-            System.out.println("test for not null");
-            if(nullA(tokens[P])){
                return true;
-            }
-            else{
+           /* else{
                return false;
-            }
+            }*/
          }
          else{
                System.out.println("failed int type");
@@ -348,8 +458,7 @@ class DDL_Parser{
                return false;
             }
          } // end if LPAREN
-         else if(tokens[P].equals("COMMA")/* || tokens[P].equals("RPAREN")*/){ // no length
-            P--;
+         else if(tokens[P].equals("COMMA")){ // no length
             return true;
          }
          else if(tokens[P].equals("RPAREN")){
@@ -357,43 +466,26 @@ class DDL_Parser{
          }
           else if(tokens[P].equals("NOT NULL")){
             System.out.println("test for not null");
-            if(nullA(tokens[P])){
+         //   if(nullA(tokens[P])){
                return true;
-            }
-            else{
+           // }
+           /* else{
                return false;
-            }
+            }*/
          }
          else{
                System.out.println("failed dec type");
                return false;
             }
 
-        /* P++;
-         if(tokens[P].equals("LPAREN")){
-            if(dLen(tokens[P])){
-               return true;
-            }
-            else{
-               return false;
-            }
-         } // end if LPAREN
-         else if(tokens[P].equals("COMMA") || tokens[P].equals("RPAREN")){ // no length
-            return true;
-         }
-         
-                  else{
-               return false;
-            }*/
-
-      }
-      else if(s.equals("DATE")){
+      } // end Dec
+      else if(s.equals("DATETYPE")){ // date type
          P++;
          if(date(tokens[P])){
             return true;
          }   
          else{
-            System.out.println("Error date is wrong "+ tokens[P]);
+        //    System.out.println("Error date is wrong "+ tokens[P]);
             return false;
          }      
       } // end DATE
@@ -410,22 +502,30 @@ class DDL_Parser{
       if(s.equals("LPAREN")){
          P++;
             if(tokens[P].equals("NUMBER")){
-               P++;
-               if(tokens[P].equals("RPAREN")){
-                  return true;
-               }
-               else{
-                  return false;
-            }
-   
+               if(isInteger(values[P]))
+               {
+                  P++;
+                  if(tokens[P].equals("RPAREN")){
+                     P++;
+                     return true;
+                  }
+                  else{
+                     System.out.println("Error missing )");
+                     return false;
+                  }
             }
             else{
+               return false;
+            }
+          } // end if number
+            else{
+               System.out.println("Error number needed but not given");
                return false;
             }
 
          }
          else{
-               System.out.println("Fail iLen");
+               System.out.println("Error length must begin with a (");
                return false;
             }
    } // end iLen
@@ -435,21 +535,29 @@ class DDL_Parser{
       if(tokens[P].equals("LPAREN")){
          P++;
             if(tokens[P].equals("NUMBER")){
-               P++;
-               if(dLenA(tokens[P])){
-                  if(tokens[P].equals("RPAREN")){
-                     return true;
+               if(isInteger(values[P])){
+                  P++;
+                  if(dLenA(tokens[P])){
+                     if(tokens[P].equals("RPAREN")){
+                        P++;
+                        return true;
+                     }
+                     else{
+                        System.out.println("Error missing )");
+                        return false;
+                     }
                   }
                   else{
+                     System.out.println("Error decimal number syntax incorrect");
                      return false;
                   }
-               }
-               else{
-                  return false;
-               }
-               
-            }
+             }
+             else{
+               return false;
+             }
+           } // end if number
             else{
+               System.out.println("Error number needed");
                return false;
             }
 
@@ -468,109 +576,94 @@ class DDL_Parser{
       else if(s.equals("COMMA")){
          P++;
          if(tokens[P].equals("NUMBER")){
-            P++;
-            if(tokens[P].equals("RPAREN")){
-               return true;
-            }
-            else{
-               return false;
-            }
+            if(isInteger(values[P])){
+               P++;
+               if(tokens[P].equals("RPAREN")){
+                  return true;
+               }
+               else{
+                  return false;
+               }
          }
          else{
             return false;
          }
       }
+      else{
+         return false;
+      }
+    }
       else{
          return false;
       }
    } // end dLenA
    
    public static boolean date(String s){
-      System.out.println("date" + s);
+      System.out.println("date " + s);
       if(s.equals("LPAREN")){
          P++;
-         if(tokens[P].equals("NUMBER")){
+         if(tokens[P].equals("DATE")){
             P++;
-            if(tokens[P].equals("SLASH")){
+            if(tokens[P].equals("RPAREN")){
                P++;
-               if(tokens[P].equals("NUMBER")){
-               P++;
-                  if(tokens[P].equals("SLASH")){
-                     P++;
-                     if(tokens[P].equals("NUMBER")){
-                     //   if(year(tokens[P]) == true)
-                      //  {
-                           P++;
-                           if(tokens[P].equals("RPAREN")){
-                              System.out.println(tokens[P] + " bye");
-                              return true;
-                              }
-                        
-                          /* else{
-                              return false;
-                           }
-                        }*/
-                        else{
-                           return false;
-                        }
-                     }
-                     else{
-                           return false;
-                        }
-                 }
-                 else{
-                     return false;
-                  }
-
-               }
-               else{
-                  return false;
-               }
-
+               return true;
             }
             else{
+               System.out.println("Error missing )");
                return false;
             }
-
          }
          else{
+            System.out.println("Error date is wrong");
             return false;
          }
-
       } // end if
       else{
+         System.out.println("Error missing (");
          return false;
       }
    } // end date
-   
-   public static boolean year(String s) throws IOException{ // check year length
-   
-      if(s.length() == 2 || s.length() == 4){
-         return true;
-      }
-      else{
-         return false;
-      }
-   } // end year
-   
+      
    public static boolean nullA(String s) throws IOException{
       System.out.println("nullA "+s);
-      if(s.equals("NOT NULL") && tokens[P+1].equals("RPAREN")){
+      if(s.equals("NOT NULL")){
          P++;
          return true;
       }
-      else if(s.equals("NOT NULL") && !tokens[P+1].equals("RPAREN")){
-         return true;
-      }
-      else if(s.equals("COMMA") || s.equals("RPAREN")){
-      //   P++;
+      else if(s.equals("COMMA") || s.equals("RPAREN") || s.equals("SEMICOLON")){
          return true;
       }
       else{
-            System.out.println("Error, nullA");
+            System.out.println("Error with nullA");
             return false;
          }
 
    } // end nullA
+   
+   public static boolean isInteger(String s) throws IOException{
+      System.out.println("check for int "+s);
+       for(int i = 0; i < s.length(); i++){
+         if(!Character.isDigit(s.charAt(i))){
+            //return false;
+            error = true;
+            break;
+         }
+       }
+       try 
+       { 
+           Integer.parseInt(s); 
+       } 
+       catch(NumberFormatException e) 
+       { 
+           return false; 
+       } 
+       catch(NullPointerException e) 
+       {
+           return false;
+       }
+       // only got here if we didn't return false
+       return true;
+
+   } // end isInteger
    
 } // end DDL_Parser
