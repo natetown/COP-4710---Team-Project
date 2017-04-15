@@ -25,6 +25,7 @@ import org.xml.sax.InputSource;
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 //Finally, import the W3C definitions for a DOM, DOM exceptions, entities and nodes:
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -234,6 +235,7 @@ try {
     DOMSource source = new DOMSource(DOM);
     StreamResult result = new StreamResult(outputStream);
     transformer.transform(source, result);
+    outputStream.close();
     } catch(TransformerException tce){
     System.out.println("Tramsformer is messed up");
     } catch(FileNotFoundException Fnfe){
@@ -244,7 +246,7 @@ try {
 public static Document loadDatabase(String databaseName){
    String databaseFileName=databaseName+".xml";
    if(databaseFileList.contains(databaseFileName)){
-   //open file 
+   //Open file 
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
    try{  
                DocumentBuilder db = dbf.newDocumentBuilder();
@@ -264,7 +266,16 @@ public static Document loadDatabase(String databaseName){
    return null;
 }
 
-public static void dropDatabase(){
+public static void dropDatabase(String databaseName){
+   String databaseFileName=databaseName+".xml";
+   if(databaseFileList.contains(databaseFileName)){
+   //Delete file and delete name from hashset
+   boolean success = (new File(databaseFileName)).delete();
+   databaseFileList.remove(databaseFileName);
+      }
+   else{
+   System.out.println("The specified table doesn't exist.");
+   }
 
 }
 //start main
@@ -272,10 +283,11 @@ public static void main(String[] args) {
 Database db = new Database();
 
 Document DOM = db.convert("teamInsert.xml", "");
-Document database = createDatabase("nathan");
+Document database = createDatabase("testing");
 db.saveDatabase(database);
 db.saveDatabase(database);
-database = loadDatabase("nathan");
+database = loadDatabase("testing");
+db.dropDatabase("testing");
 } //end main
 
 } //end Database
