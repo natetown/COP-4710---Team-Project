@@ -1,3 +1,5 @@
+//package tsqlx;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -85,7 +87,7 @@ public class MainMenu {
 		ArrayList<Lexer.Token> tokens = Lexer.lex(input);
 		 BufferedWriter bw = null;
 	        FileWriter fw = null;
-	        final String FILENAME = "lexerOuput.txt"; //output file path
+	        final String FILENAME = "lexerOutput.txt"; //output file path
 	        try {
 				fw = new FileWriter(FILENAME);
 			} catch (IOException e) {
@@ -97,7 +99,8 @@ public class MainMenu {
 	    	for (Lexer.Token token : tokens){
 	             System.out.println(token.type +" --> "+token.data);
 	             try {
-					bw.write(token.type + "  --> "+ token.data +"\n");
+					bw.write(token.type + " --> "+ token.data +"\n");
+                                        
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

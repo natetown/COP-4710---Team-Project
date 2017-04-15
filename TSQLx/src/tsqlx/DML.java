@@ -7,34 +7,32 @@ package tsqlx;
  *
  * @author kbp7
  */
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.File;
 import java.io.*;
 import java.util.Queue;
+import java.util.*;
 
 public class DML {
     static int currentToken;
-    static String[] tokens;
+    static Lexer.Token[] tokens;
     static Queue commands;
+    static Query q;
+    static boolean isValid;
+    static boolean readingWhere; //indicates that the parser has reached the WHERE clause
     
-    public static void DMLstart(File lexfile) throws IOException {
-        try{
-            BufferedReader br = new BufferedReader(new FileReader(lexfile));
-            String line;
-            tokens = new String[500];
-            for (int i=0; ((line = br.readLine()) != null); i++) {
-                tokens[i] = line;
-            }
+    public static void DMLstart(ArrayList<Lexer.Token> lexer) throws IOException {
+        System.out.println("Begin parsing...");
+        Lexer.Token line;
+        tokens = new Lexer.Token[500];
+        for (int i=0; i<lexer.size(); i++) {
+            line = lexer.get(i);
+            tokens[i] = line;
         }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        
        
         //for now, only accepting 1 query at a time
         command();
         //commandList();
+        isValid = true;
         System.out.println("ACCEPTED");
         //do something with it
     }
@@ -46,18 +44,18 @@ public class DML {
         }
     }
     public static void command()    {
-        
+        //calls corresponding query type
         currentToken = 0;
-        if(tokens[currentToken].contains("INSERT -->"))   {
+        if(tokens[currentToken].type.toString().contains("INSERT"))   {
             insert();
         }
-        else if(tokens[currentToken].contains("DELETE -->"))   {
+        else if(tokens[currentToken].type.toString().contains("DELETE"))   {
             delete();
         }
-        else if(tokens[currentToken].contains("SELECT -->"))   {
+        else if(tokens[currentToken].type.toString().contains("SELECT"))   {
             select();
         }
-        else if(tokens[currentToken].contains("CONVERT-->"))   {
+        else if(tokens[currentToken].type.toString().contains("CONVERT"))   {
             convert();
         }
         else    {
@@ -66,13 +64,19 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void insert() {
-        if(tokens[currentToken].contains("INSERT -->"))   {
+        if(tokens[currentToken].type.toString().contains("INSERT"))   {
+            //create InsertQuery object
+            q = new InsertQuery();
             currentToken++;
-            if(tokens[currentToken].contains("INTO -->"))   {
+            if(tokens[currentToken].type.toString().contains("INTO"))   {
                 currentToken++;
-                if(tokens[currentToken].contains("ID -->"))   {
+                if(tokens[currentToken].type.toString().contains("ID"))   {
+                    //assign table name to query
+                    String table = tokens[currentToken].data;
+                    q.assignTN(table);
+                    
                     currentToken++;
-                    if(tokens[currentToken].contains("LPAREN -->")) {
+                    if(tokens[currentToken].type.toString().contains("LPAREN")) {
                         fieldClause();
                         valuesClause();
                     }
@@ -86,10 +90,10 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void fieldClause()    {
-        if(tokens[currentToken].contains("LPAREN -->")) {
+        if(tokens[currentToken].type.toString().contains("LPAREN")) {
             currentToken++;
             field();
-                if(tokens[currentToken].contains("RPAREN -->")) {
+                if(tokens[currentToken].type.toString().contains("RPAREN")) {
                     currentToken++;
                 }
                 else rejected("ERROR: Missing closing parentheses");
@@ -97,14 +101,14 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void valuesClause()   {
-        if(tokens[currentToken].contains("VALUES -->")) {
+        if(tokens[currentToken].type.toString().contains("VALUES")) {
             currentToken++;
-            if(tokens[currentToken].contains("LPAREN -->")) {
+            if(tokens[currentToken].type.toString().contains("LPAREN")) {
                 currentToken++;
                 literal();
-                if(tokens[currentToken].contains("RPAREN -->")) {
+                if(tokens[currentToken].type.toString().contains("RPAREN")) {
                     currentToken++;
-                    if(tokens[currentToken].contains("SEMICOLON -->")) {
+                    if(tokens[currentToken].type.toString().contains("SEMICOLON")) {
                         currentToken++;
                     }
                     else rejected("ERROR: Missing semicolon");
@@ -117,17 +121,30 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void field() {
-        if(tokens[currentToken].contains("ID -->")) {
+        if(!readingWhere && tokens[currentToken].type.toString().contains("ID")) {
+            //add field to query
+            if(q.queryType.equals("INSERT")) {
+                ((InsertQuery)q).assignFields(tokens[currentToken].data);
+            }
+            if(q.queryType.equals("SELECT") || q.queryType.equals("TSELECT")) {
+                ((SelectQuery)q).assignColumns(tokens[currentToken].data);
+            }
             currentToken++;
             fieldList();
+        }
+        if(readingWhere && tokens[currentToken].type.toString().contains("ID")) {
+            if(q.queryType.equals("SELECT") || q.queryType.equals("TSELECT")) {
+                //((SelectQuery)q).assignColumns(tokens[currentToken].data);
+            }
         }
         else rejected("ERROR: Missing field");
     }
     //--------------------------------------------------------------------------
     public static void fieldList() {
-        if(tokens[currentToken].contains(","))  {
+        if(tokens[currentToken].type.toString().contains(","))  {
             currentToken++;
-            if(tokens[currentToken].contains("ID -->")) {
+            if(tokens[currentToken].type.toString().contains("ID")) {
+                ((InsertQuery)q).assignFields(tokens[currentToken].data);
                 currentToken++;
                 fieldList();
             }
@@ -136,9 +153,9 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void literal() {
-        String token = tokens[currentToken];
-        if(token.contains("NUMBER -->") || token.contains("STRING -->") || 
-           token.contains("DATE -->"))  {
+        String token = tokens[currentToken].type.toString();
+        if(token.contains("NUMBER") || token.contains("STRLITERAL") || 
+           token.contains("DATE"))  {
             aLiteral();
             literalList();
         }
@@ -146,23 +163,26 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void aLiteral() {
-        if(tokens[currentToken].contains("NUMBER -->")) {
+        if(tokens[currentToken].type.toString().contains("NUMBER")) {
             // do something with the number
+            ((InsertQuery)q).assignValues(tokens[currentToken].data);
             currentToken++;
         }
-        else if(tokens[currentToken].contains("STRING -->")) {
+        else if(tokens[currentToken].type.toString().contains("STRLITERAL")) {
             // do something with the number
+            ((InsertQuery)q).assignValues(tokens[currentToken].data);
             currentToken++;
         }
-        else if(tokens[currentToken].contains("DATE -->")) {
+        else if(tokens[currentToken].type.toString().contains("DATE")) {
             // do something with the number
+            ((InsertQuery)q).assignValues(tokens[currentToken].data);
             currentToken++;
         }
         else rejected("Invalid literal");
     }
     //--------------------------------------------------------------------------
     public static void literalList() {
-        if(tokens[currentToken].contains(",")) {
+        if(tokens[currentToken].type.toString().contains("COMMA")) {
             currentToken++;
             aLiteral();
             literalList();
@@ -170,30 +190,24 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void whereClause() {
-        if(tokens[currentToken].contains("LBRACK -->")) {
+        if(tokens[currentToken].type.toString().contains("WHERE"))  {
+            readingWhere = true;
             currentToken++;
-            if(tokens[currentToken].contains("WHERE -->"))  {
-                currentToken++;
-                condition();
-                if(tokens[currentToken].contains("RBRACK -->")) {
-                    currentToken++;
-                }
-                else rejected("ERROR: Missing closing bracket");
-            }
-            else rejected("ERROR: Missing keyword WHERE");
-        } //or empty
+            condition();
+        }
+        //or empty
     }
     //--------------------------------------------------------------------------
     public static void delete() {
-        if(tokens[currentToken].contains("DELETE -->")) {
+        if(tokens[currentToken].type.toString().contains("DELETE")) {
             currentToken++;
-            if(tokens[currentToken].contains("FROM -->")) {
+            if(tokens[currentToken].type.toString().contains("FROM")) {
                 currentToken++;
                 //tablename
-                if(tokens[currentToken].contains("ID -->")) {
+                if(tokens[currentToken].type.toString().contains("ID")) {
                     currentToken++;
                     whereClause();
-                    if(tokens[currentToken].contains("SEMICOLON -->"))  {
+                    if(tokens[currentToken].type.toString().contains("SEMICOLON"))  {
                         currentToken++;
                     }
                     else rejected("ERROR: missing semicolon");
@@ -206,35 +220,35 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void condition() {
-        if(tokens[currentToken].contains("ID -->")) {
+        if(tokens[currentToken].type.toString().contains("ID")) {
             field();
             relop();
             FL();
             AndOr();
         }
-        else rejected("ERROR: Missing condition");
+        else rejected("ERROR: Expected condition in WHERE clause");
     }
     //--------------------------------------------------------------------------
     public static void FL() {
-        if(tokens[currentToken].contains("ID -->")) {
+        if(tokens[currentToken].type.toString().contains("ID")) {
             field();
         }
         else aLiteral();
     }
     //--------------------------------------------------------------------------
     public static void AndOr()  {
-        if(tokens[currentToken].contains("AND"))    {
+        if(tokens[currentToken].type.toString().contains("AND"))    {
             currentToken++;
             condition();
         }
-        if(tokens[currentToken].contains("OR"))    {
+        if(tokens[currentToken].type.toString().contains("OR"))    {
             currentToken++;
             condition();
         }
         //or empty
     }
     public static void relop() {
-        if(isRelop(tokens[currentToken]))   {
+        if(isRelop(tokens[currentToken].data))   {
             currentToken++;
         }
         else rejected("ERROR: Missing relop");
@@ -258,23 +272,27 @@ public class DML {
     //--------------------------------------------------------------------------
     public static void select() {
         //type of select statement
-        if(tokens[currentToken].contains("tSELECT -->")) {
+        if(tokens[currentToken].type.toString().contains("TSELECT")) {
             temporal();
         }
-        else if(tokens[currentToken].contains("SELECT -->")) {
+        else if(tokens[currentToken].type.toString().contains("SELECT")) {
             normal();
         }
         else rejected("ERROR: Invalid command");
     }
     //--------------------------------------------------------------------------
     public static void normal() {
-        if(tokens[currentToken].contains("SELECT -->")) {
+        if(tokens[currentToken].type.toString().contains("SELECT")) {
+            q = new SelectQuery();
             currentToken++;
             columns();
-            if(tokens[currentToken].contains("FROM -->")) {
+            if(tokens[currentToken].type.toString().contains("FROM")) {
                 currentToken++;
-                if(tokens[currentToken].contains("ID -->")) {
+                if(tokens[currentToken].type.toString().contains("ID")) {
+                    //check the table
                     currentToken++;
+                    //optional
+                    whereClause();
                 }
                 else rejected("ERROR: Missing table name");
             }
@@ -284,25 +302,26 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void columns() {
-        if(tokens[currentToken].contains("ASTK -->")) {
+        if(tokens[currentToken].type.toString().contains("ASTK")) {
+            ((SelectQuery)q).assignColumns(tokens[currentToken].data);
             currentToken++;
         }
-        else if(tokens[currentToken].contains("ID -->")) {
+        else if(tokens[currentToken].type.toString().contains("ID")) {
             field();
         }
         else rejected("ERROR: Missing column selection");
     }
     //--------------------------------------------------------------------------
     public static void temporal() {
-        if(tokens[currentToken].contains("tSELECT -->")) {
+        if(tokens[currentToken].type.toString().contains("TSELECT")) {
             currentToken++;
             columns();
-            if(tokens[currentToken].contains("FROM -->")) {
+            if(tokens[currentToken].type.toString().contains("FROM")) {
                 currentToken++;
-                if(tokens[currentToken].contains("ID -->")) {
+                if(tokens[currentToken].type.toString().contains("ID")) {
                     currentToken++;
                     whereClause();
-                    if(tokens[currentToken].contains("SEMICOLON -->")) {
+                    if(tokens[currentToken].type.toString().contains("SEMICOLON")) {
                         currentToken++;
                     }
                     else rejected("ERROR: Missing semicolon");
@@ -319,13 +338,13 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void convert() {
-        if(tokens[currentToken].contains("CONVERT -->")) {
+        if(tokens[currentToken].type.toString().contains("CONVERT")) {
             currentToken++;
-            if(tokens[currentToken].contains("XML -->")) {
+            if(tokens[currentToken].type.toString().contains("XML")) {
                 currentToken++;
                 xmlFileName();
                 xsd();
-                if(tokens[currentToken].contains("AS -->")) {
+                if(tokens[currentToken].type.toString().contains("AS")) {
                     currentToken++;
                     outputFile();
                 }
@@ -337,9 +356,9 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void xsd() {
-        if(tokens[currentToken].contains("COMMA -->")) {
+        if(tokens[currentToken].type.toString().contains("COMMA")) {
             currentToken++;
-            if(tokens[currentToken].contains("XSD -->")) {
+            if(tokens[currentToken].type.toString().contains("XSD")) {
                 currentToken++;
                 xsdFileName();
             }
@@ -348,11 +367,11 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void xmlFileName() {
-        if(tokens[currentToken].contains("ID -->")) {
+        if(tokens[currentToken].type.toString().contains("ID")) {
             currentToken++;
-            if(tokens[currentToken].contains("DOT -->")) {
+            if(tokens[currentToken].type.toString().contains("DOT")) {
                 currentToken++;
-                if(tokens[currentToken].contains("XML -->")) {
+                if(tokens[currentToken].type.toString().contains("XML")) {
                     currentToken++;
                 }
                 else rejected("ERROR: Invalid XML file type");
@@ -362,13 +381,12 @@ public class DML {
         else rejected("ERROR: Invalid XML file");
     }
     //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
     public static void xsdFileName() {
-        if(tokens[currentToken].contains("ID -->")) {
+        if(tokens[currentToken].type.toString().contains("ID")) {
             currentToken++;
-            if(tokens[currentToken].contains("DOT -->")) {
+            if(tokens[currentToken].type.toString().contains("DOT")) {
                 currentToken++;
-                if(tokens[currentToken].contains("XSD -->")) {
+                if(tokens[currentToken].type.toString().contains("XSD")) {
                     currentToken++;
                 }
                 else rejected("ERROR: Invalid XSD file type");
@@ -378,11 +396,11 @@ public class DML {
         else rejected("ERROR: Invalid XSD file");
     }
     public static void outputFile() {
-        if(tokens[currentToken].contains("ID -->")) {
+        if(tokens[currentToken].type.toString().contains("ID")) {
             currentToken++;
-            if(tokens[currentToken].contains("DOT -->")) {
+            if(tokens[currentToken].type.toString().contains("DOT")) {
                 currentToken++;
-                if(tokens[currentToken].contains("TXT -->")) {
+                if(tokens[currentToken].type.toString().contains("TXT")) {
                     currentToken++;
                 }
                 else rejected("ERROR: Invalid output file type");
@@ -393,6 +411,7 @@ public class DML {
     }
     //-------------------------------------------------------------------------
     public static void rejected(String error)   {
-        System.out.println("ERROR: " + error);
+        System.out.println(error);
+        isValid = false;
     }
 }

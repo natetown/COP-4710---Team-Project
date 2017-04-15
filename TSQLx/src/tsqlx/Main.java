@@ -1,3 +1,4 @@
+package tsqlx;
 import java.util.ArrayList;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -6,10 +7,10 @@ import java.io.IOException;
 public class Main {
     
     public static void main(String[] args) throws IOException {
-        String userInput = " Create Database;";
+        String userInput = "INSERT INTO REEE; VALUES(123, 456);";
         BufferedWriter bw = null;
         FileWriter fw = null;
-        final String FILENAME = "C:\\test\\lexerOuput.txt";
+        final String FILENAME = "lexerOuput.txt";
         
         //e.g. ArrayList<Token> token = lex(inputString);
        
@@ -22,10 +23,11 @@ public class Main {
         for (Lexer.Token token : tokens){
            // System.out.println(token);
             System.out.println(token.type +" --> "+token.data);
-            bw.write(token.type + "  --> "+ token.data +"\n");
+            bw.write(token.type + " --> "+ token.data +"\n");
         }
         System.out.println("Done");
-        
+        DML dtest = new DML();
+        dtest.DMLstart(tokens);
         if (bw != null)
 			bw.close();
 

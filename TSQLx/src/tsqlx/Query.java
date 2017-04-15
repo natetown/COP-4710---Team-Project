@@ -11,7 +11,7 @@ present in the object.
  */
 import java.util.*;
 
-public class Query {
+public abstract class Query {
     String queryType;
     String tablename;
     
@@ -22,6 +22,7 @@ public class Query {
         //specifies which table to interact with
         tablename = tbl;
     }
+    /*
     public static void main(String[] args)   {
         //testing
         InsertQuery q = new InsertQuery();
@@ -29,7 +30,9 @@ public class Query {
         q.assignFields("field1");
         q.assignValues("abc");
         q.testQ(q);
+        test.testing();
     }
+*/
     public void testQ(Query q)  {
         System.out.println(q.queryType);
     }
@@ -47,15 +50,32 @@ class InsertQuery extends Query  {
     public void assignFields(String field) {
         //optional, specifies which fields to insert into
         fields.add(field);
+        
     }
     public void assignValues(String val)   {
         values.add(val);
     }
 }//end InsertQuery
-
+class Comparison    {
+    String term1;
+    String relop;
+    String term2;
+    
+    public void assignT1(String t1) {
+        term1 = t1;
+    }
+    public void assignRelop(String r) {
+        relop = r;
+    }
+    public void assignTerm2(String t2)  {
+        term2 = t2;
+    }
+}
 class SelectQuery extends Query {
     //list of columns to be selected
-    List<String> columns;
+    List<String> columns;      //columns selected
+    List<String> whereColumns; //
+    List<String> logicals;
     boolean selectAll;
     
     public void SelectQuery()   {
@@ -67,6 +87,14 @@ class SelectQuery extends Query {
             selectAll = true;
         }
         else columns.add(col);
+    }
+    public void assignWhere(String col) {
+        //adds columns to the WHERE clause
+        
+    }
+    public void assignLogicals(String logic)    {
+        //adds AND or OR
+        logicals.add(logic);
     }
 }//end SelectQuery
 
