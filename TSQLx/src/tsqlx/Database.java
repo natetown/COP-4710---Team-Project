@@ -316,6 +316,8 @@ public static void dropDatabase(String databaseName){
    }
 }
 
+
+
 public static void commit(Document DOM){
 try {
     String databaseName = DOM.getFirstChild().getNodeName();
@@ -340,6 +342,16 @@ try {
 public static Document createTable(String tableName, Document database){
 Element newTable = database.createElement(tableName);
 database.getFirstChild().appendChild(newTable);
+System.out.println("Your table, " + tableName + " has been successfully created");
+return database;
+}
+
+public static Document dropTable(String tableName, Document database){
+NodeList deletedTables = database.getElementsByTagName(tableName);
+for (int i = 0; i<deletedTables.getLength(); i++){
+deletedTables.item(i).getParentNode().removeChild(deletedTables.item(i));
+}
+System.out.println("Your table, " + tableName + " has been dropped. Type Commit to save your changes.");
 return database;
 }
 
@@ -357,6 +369,8 @@ Database db = new Database();
   commit(database);
      database = createTable("hey", database);
   commit(database);
+  database = dropTable("tem", database);
+    commit(database);
 //saveDatabase(database);
  //db.saveDatabase(database);
  //database = createDatabase("testing");
