@@ -356,13 +356,15 @@ return database;
 }
 
 public static Document insert(String tableName, ArrayList<String> fields, ArrayList<String> values, Document database){
-Element newRow = database.createElement("-row-");
-for(int i=0; i< values.size(); i++ ){
-
+Element newRow = database.createElement("row");
+for(int i=0; i < values.size(); i++ ){
+Element newField = database.createElement(fields.get(i));
+newField.setTextContent(values.get(i));
+newRow.appendChild(newField);
 }
-
 NodeList insertTables = database.getElementsByTagName(tableName);
-Node inserTable = insertTables.item(0);
+Element insertTable = (Element)insertTables.item(0);
+insertTable.appendChild(newRow);
 return database;
 }
 
@@ -370,7 +372,25 @@ return database;
 public static void main(String[] args) {
 Database db = new Database();
 
-Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
+Document database = createDatabase("somethingelse");
+saveDatabase(database);
+database = createTable("team", database);
+commit(database);
+
+ArrayList<String> fields = new ArrayList<String>();
+fields.add("yo");
+fields.add("hey");
+ArrayList<String> values = new ArrayList<String>();
+values.add("va1");
+values.add("va2");
+
+
+database = db.insert("team", fields, values, database);
+database = db.insert("team", fields, values, database);
+database = db.insert("team", fields, values, database);
+commit(database);
+
+//Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
  // Document database = createDatabase("somethingelse");
 //  commit(database);
 //  database = createTable("team", database);
