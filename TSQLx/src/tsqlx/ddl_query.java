@@ -12,7 +12,7 @@ class createQuery extends ddl_query{
    String name;
    ArrayList<field> fields;
    public createQuery(){
-      fields = new ArrayList<field>;
+      fields = new ArrayList<field>();
    }
    public void addFields(field f){
       fields.add(f);
@@ -32,7 +32,7 @@ class field{ // needs
    String type;
    int size; // default size 255
    boolean n; // not null
-   pubic void setName(String n){
+   public void setName(String n){
       name = n;
    } // end setName
    public void setType(String t){
@@ -43,5 +43,8 @@ class field{ // needs
    }
    public void setN(boolean b){
       n = b;
+   }
+   public void display(){
+      System.out.println(name + " "+ type + " "+size+" "+n);
    }
 } // end field

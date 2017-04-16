@@ -33,16 +33,16 @@ class DDL_Parser{
          arList_To_Array(lexer, tokens, values);
          printTokens();
          P = 0;
-       /*  if(stmt(tokens[P]) == true && error == false){
+         if(stmt(tokens[P]) == true && error == false){
          
             System.out.println("Accept");
          }
          else{
             System.out.println("Reject");
          
-         }*/
+         }
    } // end parse
-   public static void makeToken(String s) throws IOException{
+/*   public static void makeToken(String s) throws IOException{
       int i;
       for(i = 0; i < s.length(); i++)
       {
@@ -67,7 +67,7 @@ class DDL_Parser{
       }
       String r = s.substring(i+2); // i - 1 to remove space between closing character and '-'
       values[P] = r;
-   } // end makeValue
+   } // end makeValue*/
    
    public static void printTokens(){
       System.out.println("Tokens and Values");
@@ -162,6 +162,7 @@ class DDL_Parser{
       } // end if DATABASE
       
       else if(s.equals("TABLE")){ // create table command
+         ((createQuery)q).setType(s);
          P++;
          if(tokens[P].equals("ID")){
             P++;
@@ -348,12 +349,14 @@ class DDL_Parser{
       field f = new field();
       if(s.equals("ID"))
       {
-         f.setName(s);
+         f.setName(values[P]);
          P++;
-         if(fieldtype(tokens[P])){
-            if(nullA(tokens[P]))
+         if(fieldtype(tokens[P], f)){
+            if(nullA(tokens[P], f))
             {
                System.out.println("field is okay");
+               f.display();
+               ((createQuery)q).addFields(f);
              //  count++;
               // System.out.println(count);
              //  P++;
@@ -376,14 +379,16 @@ class DDL_Parser{
 
    } // end field
    
-   public static boolean fieldtype(String s) throws IOException{
+   public static boolean fieldtype(String s, field f) throws IOException{
       System.out.println("fieldtype "+s);
       if(s.equals("STRING")){
+         f.setType("character");
          P++;
          if(tokens[P].equals("LPAREN")){
             P++;
             if(tokens[P].equals("NUMBER")){
                if(isInteger(values[P])){
+                  f.setSize(Integer.parseInt(values[P]));
                   P++;
                   if(tokens[P].equals("RPAREN")){
                      P++;
@@ -413,10 +418,11 @@ class DDL_Parser{
             }
 
       } // end if STRING
-      else if(s.equals("INT")){ // INT for an integer, no decimal
+      else if(s.equals("INTEGER")){ // INT for an integer, no decimal
+         f.setType(s);
          P++;
          if(tokens[P].equals("LPAREN")){
-            if(iLen(tokens[P])){
+            if(iLen(tokens[P], f)){
                System.out.println("iLen resolved "+tokens[P]);
                return true;
             }
@@ -443,9 +449,10 @@ class DDL_Parser{
 
       } // end if INT
       else if(s.equals("DEC")){ // DEC for a decimal number
+         f.setType(s);
          P++;
          if(tokens[P].equals("LPAREN")){
-            if(dLen(tokens[P])){
+            if(dLen(tokens[P], f)){
                System.out.println("dLen resolved "+tokens[P]);
                return true;
             }
@@ -475,6 +482,7 @@ class DDL_Parser{
 
       } // end Dec
       else if(s.equals("DATETYPE")){ // date type
+         f.setType(s);
          P++;
          if(date(tokens[P])){
             return true;
@@ -492,13 +500,14 @@ class DDL_Parser{
 
    } // end fieldtype
    
-   public static boolean iLen(String s) throws IOException{ // optional extension for integer length
+   public static boolean iLen(String s, field f) throws IOException{ // optional extension for integer length
       System.out.println("iLen "+ s);
       if(s.equals("LPAREN")){
          P++;
             if(tokens[P].equals("NUMBER")){
                if(isInteger(values[P]))
                {
+                  f.setSize(Integer.parseInt(values[P]));
                   P++;
                   if(tokens[P].equals("RPAREN")){
                      P++;
@@ -525,12 +534,13 @@ class DDL_Parser{
             }
    } // end iLen
    
-   public static boolean dLen(String s) throws IOException { // decimal length
+   public static boolean dLen(String s, field f) throws IOException { // decimal length
       System.out.println("dLen "+ s);
       if(tokens[P].equals("LPAREN")){
          P++;
             if(tokens[P].equals("NUMBER")){
                if(isInteger(values[P])){
+                  f.setSize(Integer.parseInt(values[P]));
                   P++;
                   if(dLenA(tokens[P])){
                      if(tokens[P].equals("RPAREN")){
@@ -619,13 +629,15 @@ class DDL_Parser{
       }
    } // end date
       
-   public static boolean nullA(String s) throws IOException{
+   public static boolean nullA(String s, field f) throws IOException{
       System.out.println("nullA "+s);
       if(s.equals("NOT NULL")){
+         f.setN(true);
          P++;
          return true;
       }
       else if(s.equals("COMMA") || s.equals("RPAREN") || s.equals("SEMICOLON")){
+         f.setN(false);
          return true;
       }
       else{
