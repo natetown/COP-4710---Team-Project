@@ -342,7 +342,7 @@ try {
 public static Document createTable(String tableName, Document database){
 Element newTable = database.createElement(tableName);
 database.getFirstChild().appendChild(newTable);
-System.out.println("Your table, " + tableName + " has been successfully created");
+System.out.println("Your table, " + tableName + " has been successfully created. Type Commit to save your changes.");
 return database;
 }
 
@@ -355,22 +355,32 @@ System.out.println("Your table, " + tableName + " has been dropped. Type Commit 
 return database;
 }
 
+public static Document insert(String tableName, ArrayList<String> fields, ArrayList<String> values, Document database){
+Element newRow = database.createElement("-row-");
+for(int i=0; i< values.size(); i++ ){
+
+}
+
+NodeList insertTables = database.getElementsByTagName(tableName);
+Node inserTable = insertTables.item(0);
+return database;
+}
+
 //start main
 public static void main(String[] args) {
 Database db = new Database();
 
-//Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
-
- Document database = createDatabase("somethingelse");
- commit(database);
- database = createTable("team", database);
-  commit(database);
-   database = createTable("another", database);
-  commit(database);
-     database = createTable("hey", database);
-  commit(database);
-  database = dropTable("tem", database);
-    commit(database);
+Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
+ // Document database = createDatabase("somethingelse");
+//  commit(database);
+//  database = createTable("team", database);
+//   commit(database);
+//    database = createTable("another", database);
+//   commit(database);
+//      database = createTable("hey", database);
+//   commit(database);
+//   database = dropTable("tem", database);
+//     commit(database);
 //saveDatabase(database);
  //db.saveDatabase(database);
  //database = createDatabase("testing");
