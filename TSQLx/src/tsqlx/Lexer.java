@@ -24,8 +24,8 @@ public enum TokenType {
 	DATABASE("DATABASE\\s"), SAVE("SAVE"), LOAD("LOAD"), COMMA(","), TABLE("TABLE\\s"), INSERT("INSERT\\s"),
 	CONVERT("CONVERT\\s"), INPUT("INPUT\\s"), DELETE("DELETE\\s"), FROM("FROM\\s"), INTO("INTO\\s"), VALUES("VALUES"),
 	AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("TSELECT\\s|tselect\\s"), RELOP("<=|>=|!=|=|<|>"), WHERE("WHERE\\s"),
-	STRING("Character|CHAR"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INT"), DEC("DECIMAL|decimal"), STRLITERAL("'(.*?)'"), 
-	LBRACK("\\["), RBRACK("\\]"), NOTNULL("NOTNULL|notnull"), XSD("XSD|xsd"), XML("XML|xml"), DOT("\\."), TXT("TXT|txt"),
+	STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("decimal"), STRLITERAL("'(.*?)'"),
+	LBRACK("\\["), RBRACK("\\]"), NOTNULL("notnull\\s"), XSD("xsd\\s"), XML("xml\\s"), DOT("\\."), TXT("txt\\s"),
 	SEMICOLON(";"), DATE("(0?[1-9]|1[012])/(0?[1-9]|[12][0-9]|3[01])/([19|20]?\\d{2,})"), NUMBER("-?[0-9]+"), 
 	ID("\\p{Alpha}+[[_]?\\p{Alnum}]?"), ERROR(".+");
 	
@@ -92,6 +92,17 @@ public static ArrayList<Token> lex(String input) {
 			tokens.add(new Token(TokenType.DATE, matcher.group(TokenType.DATE.name())));
 			strIndex = matcher.end();
 			continue;
+        } else if (matcher.group(TokenType.DATETYPE.name()) != null) {
+            //add to the Token array
+            tokens.add(new Token(TokenType.DATETYPE, matcher.group(TokenType.DATETYPE.name())));
+            strIndex = matcher.end();
+            continue;
+        } else if (matcher.group(TokenType.TXT.name()) != null) {
+            //add to the Token array
+            tokens.add(new Token(TokenType.TXT, matcher.group(TokenType.TXT.name())));
+            strIndex = matcher.end();
+            continue;
+            
 		} else if (matcher.group(TokenType.NUMBER.name()) != null) {
 			//add to the Token array
 			tokens.add(new Token(TokenType.NUMBER, matcher.group(TokenType.NUMBER.name())));
@@ -142,6 +153,11 @@ public static ArrayList<Token> lex(String input) {
 			tokens.add(new Token(TokenType.INTO, matcher.group(TokenType.INTO.name())));
 			strIndex = matcher.end();
 			continue;
+        } else if (matcher.group(TokenType.AS.name()) != null) {
+            //add to the Token array
+            tokens.add(new Token(TokenType.AS, matcher.group(TokenType.AS.name())));
+            strIndex = matcher.end();
+            continue;
 		} else if (matcher.group(TokenType.LPAREN.name()) != null) {
 			//add to the Token array
 			tokens.add(new Token(TokenType.LPAREN, matcher.group(TokenType.LPAREN.name())));
