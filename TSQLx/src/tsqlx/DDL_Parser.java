@@ -36,13 +36,26 @@ class DDL_Parser{
          if(stmt(tokens[P]) == true && error == false){
          
             System.out.println("Accept");
-            ((createQuery)q).display();
+           // ((createQuery)q).display();
             if(tokens[0] == "CREATE"){
+               ((createQuery)q).display();
                if(((createQuery)q).getType().equals("TABLE")){
                   ((createQuery)q).displayFields();
                }
+            } // end if create query
+            else if(tokens[0].equals("DROP")){
+               ((dropQuery)q).display();
+               ((dropQuery)q).displayFields();
             }
-         }
+            else if(tokens[0].equals("SAVE")){
+               ((saveQuery)q).display();
+               ((saveQuery)q).displayFields();
+            }
+            else if(tokens[0].equals("LOAD")){
+               ((loadQuery)q).display();
+               ((loadQuery)q).displayFields();
+            }
+         } // end if stmt is accepted
          else{
             System.out.println("Reject");
          
@@ -87,7 +100,7 @@ class DDL_Parser{
          }
       } // end if create
       else if(s.equals("DROP")){
-         q = new createQuery();
+         q = new dropQuery();
          P++;
          if(dstmt(tokens[P]))
          {
@@ -98,9 +111,9 @@ class DDL_Parser{
          }
       } // end if drop
       else if(s.equals("SAVE")){
-         q = new createQuery();
+         q = new saveQuery();
          P++;
-         if(slstmt(tokens[P])){
+         if(sstmt(tokens[P])){
             return true;
          }
          else{
@@ -109,9 +122,9 @@ class DDL_Parser{
 
       } // end save
       else if(s.equals("LOAD")){
-         q = new createQuery();
+         q = new loadQuery();
          P++;
-         if(slstmt(tokens[P])){
+         if(lstmt(tokens[P])){
             return true;
          }
          else{
@@ -126,8 +139,9 @@ class DDL_Parser{
    } // end stmtA
    public static boolean cstmt(String s) throws IOException{ // determine if cstmt is true
       System.out.println("cstmt "+ s);
+      ((createQuery)q).setType(s);
       if(s.equals("DATABASE")){ // create database command
-         ((createQuery)q).setType(s);
+       //  ((createQuery)q).setType(s);
          P++;
          if(tokens[P].equals("ID")){
             ((createQuery)q).setName(values[P]);
@@ -148,7 +162,8 @@ class DDL_Parser{
       } // end if DATABASE
       
       else if(s.equals("TABLE")){ // create table command
-         ((createQuery)q).setType(s);
+     //    ((createQuery)q).setType(s);
+       //  System.out.println(((createQuery)q).getType());
          P++;
          if(tokens[P].equals("ID")){
             ((createQuery)q).setName(values[P]);
@@ -184,17 +199,23 @@ class DDL_Parser{
    } // end cstmt
    
    public static boolean dstmt(String s) throws IOException{
+      ((dropQuery)q).setType(s);
+      field f = new field();
       if(s.equals("DATABASE")){ // create database command
          P++;
          if(tokens[P].equals("ID")){
             System.out.println(values[P]);
-            ((createQuery)q).setName(values[P]);
+            ((dropQuery)q).setName(values[P]);
+           // field f = new field();
+            f.setName(values[P]);
+            System.out.println(((dropQuery)q).getName());
             P++;
             if(tokens[P] == null){
                System.out.println("Error missing semicolon");
                   return false;
             }
             if(tokens[P].equals("SEMICOLON")){ // completed database creation
+               ((dropQuery)q).addFields(f);
                return true;
             }
             else{
@@ -208,7 +229,8 @@ class DDL_Parser{
       else if(s.equals("TABLE")){
          P++;
          if(tokens[P].equals("ID")){
-           // ((createQuery)q).setName(values[P]);
+           ((dropQuery)q).setName(values[P]);
+            f.setName(values[P]);
             P++;
             if(tokens[P] == null){
                System.out.println("Error missing semicolon");
@@ -216,6 +238,7 @@ class DDL_Parser{
             }
 
             if(tokens[P].equals("SEMICOLON")){
+               ((dropQuery)q).addFields(f);
                return true;
             }
             else{
@@ -231,16 +254,21 @@ class DDL_Parser{
       }
    } // end dstmt
    
-   public static boolean slstmt(String s) throws IOException{
+   public static boolean sstmt(String s) throws IOException{ // save stmt
+      field f = new field();
+      ((saveQuery)q).setType(s);
       if(s.equals("DATABASE")){
          P++;
          if(tokens[P].equals("ID")){
+            ((saveQuery)q).setName(values[P]);
+            f.setName(values[P]);
             P++;
             if(tokens[P] == null){
                System.out.println("Error missing semicolon");
                return false;
             }
             if(tokens[P].equals("SEMICOLON")){
+               ((saveQuery)q).addFields(f);
                return true;
             }
             else{
@@ -254,7 +282,38 @@ class DDL_Parser{
       else{
                return false;
             }
-   } // end slstmt
+   } // end sstmt
+   
+   public static boolean lstmt(String s) throws IOException{ // load stmt
+      field f = new field();
+      ((loadQuery)q).setType(s);
+      if(s.equals("DATABASE")){
+         P++;
+         if(tokens[P].equals("ID")){
+            ((loadQuery)q).setName(values[P]);
+            f.setName(values[P]);
+            P++;
+            if(tokens[P] == null){
+               System.out.println("Error missing semicolon");
+               return false;
+            }
+            if(tokens[P].equals("SEMICOLON")){
+               ((loadQuery)q).addFields(f);
+               return true;
+            }
+            else{
+               return false;
+            }
+         }
+         else{
+               return false;
+            }
+      }
+      else{
+               return false;
+            }
+   } // end lstmt
+
    
    public static boolean tdec(String s) throws IOException{ // check that tdec is correct
       System.out.println("tdec "+ s);
