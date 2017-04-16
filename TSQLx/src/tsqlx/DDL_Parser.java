@@ -36,38 +36,18 @@ class DDL_Parser{
          if(stmt(tokens[P]) == true && error == false){
          
             System.out.println("Accept");
+            ((createQuery)q).display();
+            if(tokens[0] == "CREATE"){
+               if(((createQuery)q).getType().equals("TABLE")){
+                  ((createQuery)q).displayFields();
+               }
+            }
          }
          else{
             System.out.println("Reject");
          
          }
    } // end parse
-/*   public static void makeToken(String s) throws IOException{
-      int i;
-      for(i = 0; i < s.length(); i++)
-      {
-         if(s.charAt(i) == '-')
-         {
-            break;
-         }
-         
-      }
-      String r = s.substring(0, i - 1); // i - 1 to remove space between closing character and '-'
-      tokens[P] = r;
-   } // end makeToken
-   
-   public static void makeValue(String s) throws IOException{
-      int i;
-      for(i = 0; i < s.length(); i++)
-      {
-         if(s.charAt(i) == '>')
-         {
-            break;
-         }
-      }
-      String r = s.substring(i+2); // i - 1 to remove space between closing character and '-'
-      values[P] = r;
-   } // end makeValue*/
    
    public static void printTokens(){
       System.out.println("Tokens and Values");
@@ -107,6 +87,7 @@ class DDL_Parser{
          }
       } // end if create
       else if(s.equals("DROP")){
+         q = new createQuery();
          P++;
          if(dstmt(tokens[P]))
          {
@@ -117,6 +98,7 @@ class DDL_Parser{
          }
       } // end if drop
       else if(s.equals("SAVE")){
+         q = new createQuery();
          P++;
          if(slstmt(tokens[P])){
             return true;
@@ -127,6 +109,7 @@ class DDL_Parser{
 
       } // end save
       else if(s.equals("LOAD")){
+         q = new createQuery();
          P++;
          if(slstmt(tokens[P])){
             return true;
@@ -147,8 +130,11 @@ class DDL_Parser{
          ((createQuery)q).setType(s);
          P++;
          if(tokens[P].equals("ID")){
-            ((createQuery)q).setName(tokens[P]);
+            ((createQuery)q).setName(values[P]);
             P++;
+            if(tokens[P] == null){
+               return false;
+            }
             if(tokens[P].equals("SEMICOLON")){ // completed database creation
                return true;
             }
@@ -165,6 +151,8 @@ class DDL_Parser{
          ((createQuery)q).setType(s);
          P++;
          if(tokens[P].equals("ID")){
+            ((createQuery)q).setName(values[P]);
+             System.out.println(((createQuery)q).getName());
             P++;
             if(tdec(tokens[P])){ // if tdec returns true good table declaration
                System.out.println("is it good? "+ tokens[P]);
@@ -199,6 +187,8 @@ class DDL_Parser{
       if(s.equals("DATABASE")){ // create database command
          P++;
          if(tokens[P].equals("ID")){
+            System.out.println(values[P]);
+            ((createQuery)q).setName(values[P]);
             P++;
             if(tokens[P] == null){
                System.out.println("Error missing semicolon");
@@ -218,6 +208,7 @@ class DDL_Parser{
       else if(s.equals("TABLE")){
          P++;
          if(tokens[P].equals("ID")){
+           // ((createQuery)q).setName(values[P]);
             P++;
             if(tokens[P] == null){
                System.out.println("Error missing semicolon");
@@ -357,7 +348,8 @@ class DDL_Parser{
                System.out.println("field is okay");
                f.display();
                ((createQuery)q).addFields(f);
-             //  count++;
+              // System.out.println(((createQuery)q).get(0));
+               count++;
               // System.out.println(count);
              //  P++;
                return true;
@@ -431,16 +423,16 @@ class DDL_Parser{
             }
          } // end if LPAREN
          else if(tokens[P].equals("COMMA")){ // no length
+            f.setSize(255); // 255 for no set length
             return true;
          }
          else if(tokens[P].equals("RPAREN")){
+            f.setSize(255); // 255 for no set length
             return true;
          }
           else if(tokens[P].equals("NOT NULL")){
-               return true;
-           /* else{
-               return false;
-            }*/
+            f.setSize(255); // 255 for no set length
+            return true;
          }
          else{
                System.out.println("failed int type");
@@ -461,19 +453,16 @@ class DDL_Parser{
             }
          } // end if LPAREN
          else if(tokens[P].equals("COMMA")){ // no length
+            f.setSize(255); // 255 for no set length
             return true;
          }
          else if(tokens[P].equals("RPAREN")){
+            f.setSize(255); // 255 for no set length
             return true;
          }
           else if(tokens[P].equals("NOT NULL")){
-            System.out.println("test for not null");
-         //   if(nullA(tokens[P])){
-               return true;
-           // }
-           /* else{
-               return false;
-            }*/
+            f.setSize(255); // 255 for no set length
+            return true;
          }
          else{
                System.out.println("failed dec type");
