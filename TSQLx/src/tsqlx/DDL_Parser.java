@@ -7,35 +7,34 @@ This program parses a DDL statement
 */
 class DDL_Parser{
 
-   static String[] lines = new String[50];
-   static String[] tokens = new String[100];
-   static String[] values = new String[100];
-   static int P = 0;
-   static int count = 0;
+ //  static String[] lines = new String[50];
+   static String[] tokens = new String[100]; // holds the types for each token for parsing
+   static String[] values = new String[100]; // holds the values for each token 
+   static int P = 0; // position in the parsing process
+   static int count = 0; // number of attributes
    static boolean error = false; // semantic error false if no error
-   static ddl_query q;
-  /* public static void main(ArrayList<Lexer.Token> lexer) throws IOException{ // only for testing
-    //  if(args.length > 0){
-         arList_To_Array(lexer, tokens, values);
-         parse(lexer);
-    // }
-   } // end main*/
-   
+   static ddl_query q; // the query to be filled
+   /** 
+      arList_To_Array fill the tokens and value arrays from the array list provided
+   */
    public static void arList_To_Array(ArrayList<Lexer.Token> mytokens, String[] arrayTknType, String[] arrayLexeme){ 
    int i; 
    for(i=0;i < mytokens.size(); i++){
       arrayTknType[i] = mytokens.get(i).type.toString(); 
       arrayLexeme[i] = mytokens.get(i).data; }
    } // end arrayList to Array tranform
-   
+   /**
+      parse void method that tests the inputed line is syntaxicly correct
+      it also assigns query values and the query type
+      includes error messages
+   */
    public static void parse(ArrayList<Lexer.Token> lexer) throws IOException{ 
         // System.out.println("Start Parse");
          arList_To_Array(lexer, tokens, values);
-         printTokens();
-         P = 0;
-         if(stmt(tokens[P]) == true && error == false){
-         
-            System.out.println("Accept");
+         printTokens(); // test that the two methods are correct by printing their contents
+         P = 0; // reset P
+         if(stmt(tokens[P]) == true && error == false){ // statement is correct
+            System.out.println("Accept"); // print accept message
            // ((createQuery)q).display();
             if(tokens[0] == "CREATE"){
                ((createQuery)q).display();
@@ -62,7 +61,7 @@ class DDL_Parser{
          }
    } // end parse
    
-   public static void printTokens(){
+   public static void printTokens(){ // print the values of the tokens and values array for error handling
       System.out.println("Tokens and Values");
       for(int i = 0; i < tokens.length; i++)
       {
@@ -86,10 +85,10 @@ class DDL_Parser{
          return false;
       }
    } // end stmt
-   public static boolean stmtA(String s) throws IOException{ // determine if create or drop stmt
-      System.out.println("stmtA "+ s);
-      if(s.equals("CREATE")){
-         q = new createQuery();
+   public static boolean stmtA(String s) throws IOException{ // determine stmt type
+    //  System.out.println("stmtA "+ s);
+      if(s.equals("CREATE")){ // create stmt
+         q = new createQuery(); // make create query
          P++;
          if(cstmt(tokens[P]))
          {
@@ -99,8 +98,8 @@ class DDL_Parser{
             return false;
          }
       } // end if create
-      else if(s.equals("DROP")){
-         q = new dropQuery();
+      else if(s.equals("DROP")){ // drop stmt
+         q = new dropQuery(); // make drop query
          P++;
          if(dstmt(tokens[P]))
          {
@@ -110,8 +109,8 @@ class DDL_Parser{
             return false;
          }
       } // end if drop
-      else if(s.equals("SAVE")){
-         q = new saveQuery();
+      else if(s.equals("SAVE")){ // save stmt
+         q = new saveQuery(); // make save query
          P++;
          if(sstmt(tokens[P])){
             return true;
@@ -121,8 +120,8 @@ class DDL_Parser{
          }
 
       } // end save
-      else if(s.equals("LOAD")){
-         q = new loadQuery();
+      else if(s.equals("LOAD")){ // load stmt
+         q = new loadQuery(); // make load query
          P++;
          if(lstmt(tokens[P])){
             return true;
@@ -138,21 +137,22 @@ class DDL_Parser{
 
    } // end stmtA
    public static boolean cstmt(String s) throws IOException{ // determine if cstmt is true
-      System.out.println("cstmt "+ s);
-      ((createQuery)q).setType(s);
+     // System.out.println("cstmt "+ s);
+      ((createQuery)q).setType(s); // table or database
       if(s.equals("DATABASE")){ // create database command
-       //  ((createQuery)q).setType(s);
          P++;
          if(tokens[P].equals("ID")){
-            ((createQuery)q).setName(values[P]);
+            ((createQuery)q).setName(values[P]); // assign name of table or database
             P++;
-            if(tokens[P] == null){
+            if(tokens[P] == null){ // missing semicolon error
+               System.out.println("Error missing semicolon");
                return false;
             }
             if(tokens[P].equals("SEMICOLON")){ // completed database creation
                return true;
             }
-            else{
+            else{ // does not end with semicolon
+               System.out.println("Error does not end with semicolon");
                return false;
             }
          }

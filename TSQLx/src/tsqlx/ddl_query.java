@@ -6,7 +6,10 @@ public abstract class ddl_query{
       querytype = type;
    }
 } // end ddl_query
-
+/**
+   createQuery for create table and create database commands
+   holds a name and its type. Type can be database or table
+*/
 class createQuery extends ddl_query{
    String type;
    String name;
@@ -17,9 +20,6 @@ class createQuery extends ddl_query{
    public void addFields(field f){
       fields.add(f);
    }
-  /* public field getField(int x){
-      return fields.get(x);
-   }*/
    public String getName(){
       return name;
    }
@@ -40,12 +40,14 @@ class createQuery extends ddl_query{
       }
    } // end displayFields
    public void display(){
-    //  String n = toString(name);
-     // String t = toString(type);
       System.out.println("Create\n"+name + " "+ type);
    } // end display
 } // end createQuery
 
+/** 
+   dropQuery for drop table and drop database commands
+   holds a name and its type. Type can be database or table
+*/
 class dropQuery extends ddl_query{
    String type;
    String name;
@@ -83,6 +85,10 @@ class dropQuery extends ddl_query{
    
 } // end dropQuery
 
+/** 
+   saveQuery holds save database command
+*/
+
 class saveQuery extends ddl_query{
    String type;
    String name;
@@ -119,7 +125,9 @@ class saveQuery extends ddl_query{
    } // end display
    
 } // end saveQuery
-
+/** 
+   loadQuery holds load database command
+*/
 class loadQuery extends ddl_query{
    String type;
    String name;
@@ -157,7 +165,13 @@ class loadQuery extends ddl_query{
    
 } // end loadQuery
 
-
+/** 
+   field class holds data about attributes (columns)
+   name is used for all query types, while type size and n are only for create table
+   type holds the attribute type (integer, number, character, date)
+   the size holds the maximum size of the attribute 255 by default
+   n is whether not null is included with the attribute
+*/
 class field{ // needs 
    String name;
    String type;
