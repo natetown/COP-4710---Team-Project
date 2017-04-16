@@ -1,36 +1,37 @@
 /* Implements the LL(1) grammar used to parse DML statements.
    Takes tokens as a string array. Checks for syntax.
+   
+   Refer to DMLgrammar file for full LL(1) grammar
+
+   Also creates Query objects that describe the query. 
  */
 package tsqlx;
 
 /**
- *
- * @author kbp7
+ Author: Kevin Poon
  */
 import java.io.*;
 import java.util.Queue;
 import java.util.*;
 
 public class DML {
-    static int currentToken;
-    static Lexer.Token[] tokens;
-    static Queue commands;
-    static Query q;
-    static Comparison c;
-    static boolean isValid;
-    static int term;    //indicates which term is being read
+    static int currentToken;        //index of current token
+    static Lexer.Token[] tokens;    //holds tokens from the Lexical Analyzer
+    static Query q;                 //generic Query object
+    static Comparison c;            //Comparison object for WHERE clause
+    static boolean isValid;         //tells if query is valid or not
+    static int term;                //indicates which term is being read
     public static int readingWhere; //indicates that the parser has reached the WHERE clause
-    
-    
+   
     public static void DMLstart(ArrayList<Lexer.Token> lexer) throws IOException {
         System.out.println("Begin parsing...");
         Lexer.Token line;
         tokens = new Lexer.Token[500];
+        //iterates through the token list
         for (int i=0; i<lexer.size(); i++) {
             line = lexer.get(i);
             tokens[i] = line;
         }
-        
        
         //for now, only accepting 1 query at a time
         readingWhere = 0;
@@ -38,7 +39,7 @@ public class DML {
         //commandList();
         isValid = true;
         
-        /*
+        /* ----------------------- TESTS ----------------------------
         // TEST SELECT QUERIES
         System.out.println("Testing SELECT query object:");
         System.out.println("Query type: " + q.queryType);
@@ -80,9 +81,12 @@ public class DML {
         
         System.out.println("ACCEPTED");
         //do something with query
+        
+        
+        
     }
     public static void commandList()  {
-        //if we allow multiple SQL queries at once, use this
+        //if we allow multiple SQL queries at once, use this method
         if(tokens[currentToken]!= null) {
             command();
             commandList();
@@ -350,7 +354,7 @@ public class DML {
             relop();
             term = 2; //reading 2nd term
             FL();
-            term = 1; //reset to 1st term
+            term = 1; //reset to 1st term to prepare for loop around
             if(q.queryType.equals("SELECT")||q.queryType.equals("TSELECT")) {
                 ((SelectQuery)q).assignCondition(c);
             }
@@ -363,6 +367,7 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void FL() {
+        //Field or Literal
         if(tokens[currentToken].type.toString().contains("ID")) {
             field();
         }
@@ -370,9 +375,8 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void AndOr()  {
-        
+        //accepts both SELECT and TSELECT
         if(q.queryType.contains("SELECT"))  {
-            
             if(tokens[currentToken].data.contains("AND"))    {
                 System.out.println("Invoked AndOr");
                 ((SelectQuery)q).assignLogicals("AND");
@@ -401,6 +405,7 @@ public class DML {
     }
     public static void relop() {
         System.out.println("INVOKED RELOP: " + tokens[currentToken].data);
+        //this if statement will work for both SELECT and TSELECT
         if(q.queryType.contains("SELECT")) {
             if(tokens[currentToken].type.toString().contains("RELOP"))   {
                 ((SelectQuery)q).assignRelops(tokens[currentToken].data);
@@ -438,10 +443,10 @@ public class DML {
     //--------------------------------------------------------------------------
     public static void select() {
         //type of select statement
-        if(tokens[currentToken].type.toString().contains("TSELECT")) {
+        if(tokens[currentToken].type.toString().equals("TSELECT")) {
             temporal();
         }
-        else if(tokens[currentToken].type.toString().contains("SELECT")) {
+        else if(tokens[currentToken].type.toString().equals("SELECT")) {
             normal();
         }
         else rejected("ERROR: Invalid command");
@@ -471,6 +476,7 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void columns() {
+        //columns to be selected
         if(tokens[currentToken].type.toString().contains("ASTK")) {
             ((SelectQuery)q).assignColumns(tokens[currentToken].data);
             currentToken++;
@@ -487,6 +493,7 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void temporal() {
+        //nearly the same format as normal select
         if(tokens[currentToken].type.toString().contains("TSELECT")) {
             q = new TSelectQuery();
             currentToken++;
@@ -510,7 +517,7 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void string() {
-        
+        //placeholder
     }
     //--------------------------------------------------------------------------
     public static void convert() {

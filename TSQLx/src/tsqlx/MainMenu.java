@@ -116,7 +116,8 @@ public class MainMenu {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+                 try{ DML.DMLstart(tokens); }
+                 catch(IOException e) {}
 		
 	}
 	
