@@ -38,13 +38,15 @@ public class DML {
         //commandList();
         isValid = true;
         
-        
+        /*
         // TEST SELECT QUERIES
         System.out.println("Testing SELECT query object:");
         System.out.println("Query type: " + q.queryType);
         System.out.println("Table name: " + q.tablename);
         ((SelectQuery)q).displayColumns();
         ((SelectQuery)q).displayCondtions();
+        ((SelectQuery)q).displayLogicals();
+        */
         
         
         /*
@@ -64,6 +66,7 @@ public class DML {
         System.out.println("Query type: " + q.queryType);
         System.out.println("Table name: " + q.tablename);
         ((DeleteQuery)q).displayCondtions();
+        ((DeleteQuery)q).displayLogicals();
         */
         
         /*
@@ -307,7 +310,7 @@ public class DML {
     //--------------------------------------------------------------------------
     public static void whereClause() {
         if(tokens[currentToken].type.toString().contains("WHERE"))  {
-            c = new Comparison();
+            //c = new Comparison();
             readingWhere++;
             currentToken++;
             condition();
@@ -341,6 +344,7 @@ public class DML {
     //--------------------------------------------------------------------------
     public static void condition() {
         if(tokens[currentToken].type.toString().contains("ID")) {
+            c = new Comparison();
             term = 1; //reading 1st term in a comparison
             field();
             relop();
@@ -366,13 +370,32 @@ public class DML {
     }
     //--------------------------------------------------------------------------
     public static void AndOr()  {
-        if(tokens[currentToken].type.toString().contains("AND"))    {
-            currentToken++;
-            condition();
+        
+        if(q.queryType.contains("SELECT"))  {
+            
+            if(tokens[currentToken].data.contains("AND"))    {
+                System.out.println("Invoked AndOr");
+                ((SelectQuery)q).assignLogicals("AND");
+                currentToken++;
+                condition();
+            }
+            if(tokens[currentToken].data.contains("OR"))    {
+                ((SelectQuery)q).assignLogicals("OR");
+                currentToken++;
+                condition();
+            }
         }
-        if(tokens[currentToken].type.toString().contains("OR"))    {
-            currentToken++;
-            condition();
+        if(q.queryType.contains("DELETE"))  {
+            if(tokens[currentToken].data.contains("AND"))    {
+                ((DeleteQuery)q).assignLogicals("AND");
+                currentToken++;
+                condition();
+            }
+            if(tokens[currentToken].data.contains("OR"))    {
+                ((DeleteQuery)q).assignLogicals("OR");
+                currentToken++;
+                condition();
+            }
         }
         //or empty
     }

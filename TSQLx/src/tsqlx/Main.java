@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Main {
     
     public static void main(String[] args) throws IOException {
-        String userInput = "tselect (abc) from tn where x >= 99;";
+        String userInput = "delete from tn where x >= 99 AND y < 2 OR z = 1;";
         BufferedWriter bw = null;
         FileWriter fw = null;
         final String FILENAME = "lexerOuput.txt";

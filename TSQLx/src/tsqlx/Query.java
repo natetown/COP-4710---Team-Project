@@ -121,6 +121,13 @@ class SelectQuery extends Query {
         }
         System.out.println();
     }
+    public void displayLogicals()  {
+        System.out.println("Logical Operators");
+        for(int i=0; i<logicals.size(); i++)  {
+            System.out.printf(logicals.get(i) + " ");
+        }
+        System.out.println();
+    }
     public void displayColumns()  {
         System.out.println("Columns: ");
         for(int i=0; i<columns.size(); i++)  {
@@ -195,6 +202,13 @@ class DeleteQuery extends Query {
             System.out.printf(conditions.get(i).term1 + " ");
             System.out.printf(conditions.get(i).relop + " ");
             System.out.println(conditions.get(i).term2);
+        }
+        System.out.println();
+    }
+    public void displayLogicals()  {
+        System.out.println("Logical Operators");
+        for(int i=0; i<logicals.size(); i++)  {
+            System.out.printf(logicals.get(i) + " ");
         }
         System.out.println();
     }
