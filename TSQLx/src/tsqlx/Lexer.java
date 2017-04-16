@@ -24,7 +24,7 @@ public enum TokenType {
 	DATABASE("DATABASE\\s"), SAVE("SAVE\\s"), LOAD("LOAD\\s"), COMMA(","), TABLE("TABLE\\s"), INSERT("INSERT\\s"),
 	CONVERT("CONVERT\\s"), INPUT("INPUT\\s"), DELETE("DELETE\\s"), FROM("FROM\\s"), INTO("INTO\\s"), VALUES("VALUES"),
 	AND("AND"),OR("OR"),AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("tselect\\s"), RELOP("<=|>=|!=|=|<|>"),
-    WHERE("WHERE\\s"),STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("decimal"),STRLITERAL("'(.*?)')",
+    WHERE("WHERE\\s"),STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("decimal"),STRLITERAL("'(.*?)'"),
 	LBRACK("\\["), RBRACK("\\]"), NOTNULL("not null|notnull"), XSD("xsd\\s"), XML("xml"), DOT("\\."), TXT("txt\\s"),
 	SEMICOLON(";"), DATE("(0?[1-9]|1[012])/(0?[1-9]|[12][0-9]|3[01])/([19|20]?\\d{2,})"), NUMBER("-?[0-9]+"), 
 	ID("\\p{Alpha}+[[_]?\\p{Alnum}]+"), ERROR(".+");
