@@ -41,7 +41,42 @@ class Database {
 private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 private static final String outputEncoding = "UTF-8";
-private static Set<String> databaseFileList = new HashSet<String>();
+private static HashSet<String> databaseFileList = new HashSet<String>();
+private static File databaseFileListPerm = new File("databaseFileList.conf");
+
+Database(){
+
+if(databaseFileListPerm.exists() && !databaseFileListPerm.isDirectory()) { 
+    databaseFileList= readDatabaseFileListPerm();
+}
+}//end database constructor
+
+public HashSet<String> readDatabaseFileListPerm(){
+HashSet<String> dbFList = new HashSet<String>();
+try (BufferedReader br = new BufferedReader(new FileReader(databaseFileListPerm))) {
+    String line;
+    while ((line = br.readLine()) != null) {
+       dbFList.add(line); 
+    } 
+}     catch(FileNotFoundException fnfe){
+      System.out.println(fnfe.getMessage());
+    } catch(IOException ioe){
+      System.out.println(ioe.getMessage());
+    }
+return dbFList;
+}
+
+public static void saveDataBaseFileListPerm(HashSet<String> fileList){
+try{
+PrintWriter printWriter = new PrintWriter(new FileWriter(databaseFileListPerm));
+for (String s : fileList) {
+    printWriter.println(s);
+    } 
+    printWriter.close();
+} catch(IOException ioe){
+    System.out.println(ioe.getMessage());
+    }
+}
 
 public Document convert(String xmlFileName, String xsdFileName, String fileName) {
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -207,7 +242,6 @@ public static Document createDatabase(String databaseName){
             Document doc = db.newDocument();
             Element database = doc.createElement(databaseName);
             doc.appendChild(database);
-            System.out.println(doc.getFirstChild());
             return doc;
             } catch(Exception ex){
             System.out.println(ex.getMessage());
@@ -226,6 +260,7 @@ try {
     }
     else{
     databaseFileList.add(databaseFileName);
+    saveDataBaseFileListPerm(databaseFileList);
     System.out.println("Your database, " + databaseName + ", has been created.");
     } 
     // Use a Transformer for output
@@ -254,6 +289,7 @@ public static Document loadDatabase(String databaseName){
                db.setErrorHandler(new MyErrorHandler(new PrintWriter(errorWriter)));
                Document doc = db.parse(new InputSource(databaseFileName));
                clean(doc);
+               System.out.println("Your database, " + databaseName + " has been loaded successfully.");
                return doc;
    } catch(Exception se){
       System.out.println(se.getMessage());
@@ -286,18 +322,19 @@ public static void createTable(){
 public static void main(String[] args) {
 Database db = new Database();
 
-Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
-// Document database = createDatabase("somethingelse");
-// db.saveDatabase(database);
-// database = createDatabase("testing");
-// db.saveDatabase(database);
+//Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
+
+ //Document database = createDatabase("somethingelse");
+ //db.saveDatabase(database);
+ //database = createDatabase("testing");
+ //db.saveDatabase(database);
 // //db.saveDatabase(database);
 // //db.saveDatabase(database);
 // //database = createDatabase("testing");
-// 
-// database = loadDatabase("somethingelse");
-// System.out.println(database.getFirstChild().getNodeName());
-// //db.dropDatabase("testing");
+Document database = loadDatabase("testing");
+//dropDatabase("somethingelse");
+//System.out.println(database.getFirstChild().getNodeName());
+//db.dropDatabase("testing");
 } //end main
 
 } //end Database
