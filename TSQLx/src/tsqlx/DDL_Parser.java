@@ -96,6 +96,7 @@ class DDL_Parser{
    public static boolean stmtA(String s) throws IOException{ // determine if create or drop stmt
       System.out.println("stmtA "+ s);
       if(s.equals("CREATE")){
+         q = new createQuery();
          P++;
          if(cstmt(tokens[P]))
          {
@@ -143,9 +144,10 @@ class DDL_Parser{
    public static boolean cstmt(String s) throws IOException{ // determine if cstmt is true
       System.out.println("cstmt "+ s);
       if(s.equals("DATABASE")){ // create database command
-         q = new createQuery();
+         ((createQuery)q).setType(s);
          P++;
          if(tokens[P].equals("ID")){
+            ((createQuery)q).setName(tokens[P]);
             P++;
             if(tokens[P].equals("SEMICOLON")){ // completed database creation
                return true;
@@ -343,8 +345,10 @@ class DDL_Parser{
    
    public static boolean field(String s) throws IOException{
       System.out.println("field "+s);
+      field f = new field();
       if(s.equals("ID"))
       {
+         f.setName(s);
          P++;
          if(fieldtype(tokens[P])){
             if(nullA(tokens[P]))
