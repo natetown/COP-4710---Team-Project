@@ -44,7 +44,7 @@ class InsertQuery extends Query  {
     ArrayList<String> fields = new ArrayList<String>();
     ArrayList<String> values = new ArrayList<String>();
     
-    public void InsertQuery()   {
+    public InsertQuery()   {
         queryType = "INSERT";
     }
     public void assignFields(String field) {
@@ -67,40 +67,72 @@ class Comparison    {
     public void assignRelop(String r) {
         relop = r;
     }
-    public void assignTerm2(String t2)  {
+    public void assignT2(String t2)  {
         term2 = t2;
     }
+    
 }
 class SelectQuery extends Query {
     //list of columns to be selected
-    List<String> columns;      //columns selected
-    List<String> whereColumns; //
-    List<String> logicals;
+    ArrayList<String> columns;      //columns selected
+    ArrayList<String> whereLeft;    //left side of a comparison
+    ArrayList<String> relops;
+    ArrayList<String> whereRight;   //right side of a comparison
+    ArrayList<String> logicals;
+    ArrayList<Comparison> conditions;
     boolean selectAll;
     
-    public void SelectQuery()   {
+    public SelectQuery()   {
         queryType = "SELECT";
+        columns = new ArrayList<String>();
+        whereLeft = new ArrayList<String>();
+        relops = new ArrayList<String>();
+        logicals = new ArrayList<String>();
+        conditions = new ArrayList<Comparison>();
     }
     public void assignColumns(String col)   {
         //looks for simple select
         if(col.contains("ASTK") || col.contains("*")) {
             selectAll = true;
+            columns.add(col);
         }
         else columns.add(col);
     }
+    public void assignCondition(Comparison comp)    {
+        conditions.add(comp);
+    }
     public void assignWhere(String col) {
         //adds columns to the WHERE clause
-        
+        whereLeft.add(col);
+    }
+    public void assignRelops(String rel)    {
+        relops.add(rel);
     }
     public void assignLogicals(String logic)    {
         //adds AND or OR
         logicals.add(logic);
     }
+    public void displayCondtions()  {
+        System.out.println("Conditions");
+        for(int i=0; i<conditions.size(); i++)  {
+            System.out.printf(conditions.get(i).term1 + " ");
+            System.out.printf(conditions.get(i).relop + " ");
+            System.out.println(conditions.get(i).term2);
+        }
+        System.out.println();
+    }
+    public void displayColumns()  {
+        System.out.println("Columns: ");
+        for(int i=0; i<columns.size(); i++)  {
+            System.out.printf(columns.get(i) + " ");
+        }
+        System.out.println();
+    }
 }//end SelectQuery
 
 class TSelectQuery extends SelectQuery  {
     
-    public void TSelectQuery()  {
+    public TSelectQuery()  {
         queryType = "TSELECT";
     }
 }//end TSelectQuery
@@ -110,7 +142,7 @@ class ConvertQuery extends Query    {
     String xsdFileName;
     String outFileName;
     
-    public void ConvertQuery()  {
+    public ConvertQuery()  {
         queryType = "CONVERT";
     }
     public void assignXML(String filename) {
@@ -126,3 +158,44 @@ class ConvertQuery extends Query    {
         outFileName = filename;
     }
 }//end ConvertQuery
+
+class DeleteQuery extends Query {
+    ArrayList<String> whereLeft; //
+    ArrayList<String> logicals;
+    ArrayList<String> relops;
+    ArrayList<Comparison> conditions;
+    boolean selectAll;
+    
+    public DeleteQuery()    {
+        whereLeft = new ArrayList<String>();
+        relops = new ArrayList<String>();
+        logicals = new ArrayList<String>();
+        conditions = new ArrayList<Comparison>();
+        queryType = "DELETE";
+    }
+    public void assignWhere(String col) {
+        //adds columns to the WHERE clause
+        whereLeft.add(col);
+    }
+    public void assignRelops(String rel)    {
+        //adds a relational operator
+        relops.add(rel);
+    }
+    public void assignLogicals(String logic)    {
+        //adds AND or OR
+        logicals.add(logic);
+    }
+    public void assignCondition(Comparison c)   {
+        //adds a condition to the WHERE clause
+        conditions.add(c);
+    }
+    public void displayCondtions()  {
+        System.out.println("Conditions: ");
+        for(int i=0; i<conditions.size(); i++)  {
+            System.out.printf(conditions.get(i).term1 + " ");
+            System.out.printf(conditions.get(i).relop + " ");
+            System.out.println(conditions.get(i).term2);
+        }
+        System.out.println();
+    }
+}

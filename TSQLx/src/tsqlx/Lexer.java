@@ -19,7 +19,7 @@ public class Lexer {
 										"<=|>=|!=|=|<|>"), WHERE("WHERE"), STRING("Character|CHAR"), DECIMAL(
 												"(\\d+\\.\\d+)"), INTEGER("INT"), DEC("DECIMAL|decimal"), STRLITERAL(
 														"'(.*?)'"), LBRACK("\\["), RBRACK("\\]"), NOTNULL(
-																"NOTNULL|notnull"), XSD("XSD|xsd"), XML("XML|xml"), DOT(
+																"NOT NULL|not null"), XSD("XSD|xsd"), XML("XML|xml"), DOT(
 																		"\\."), TXT("TXT|txt"), SEMICOLON(";"), DATE(
 																				"(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])-([19|20]?\\d{2,})"), NUMBER(
 																						"-?[0-9]+"), ID(
@@ -158,6 +158,10 @@ public class Lexer {
 				tokens.add(new Token(TokenType.VALUES, matcher.group(TokenType.VALUES.name())));
 				strIndex = matcher.end();
 				continue;
+                        } else if (matcher.group(TokenType.AS.name()) != null) {
+				tokens.add(new Token(TokenType.AS, matcher.group(TokenType.AS.name())));
+				strIndex = matcher.end();
+				continue;
 			} else if (matcher.group(TokenType.RELOP.name()) != null) {
 				tokens.add(new Token(TokenType.RELOP, matcher.group(TokenType.RELOP.name())));
 				strIndex = matcher.end();
@@ -207,6 +211,10 @@ public class Lexer {
 				continue;
 			} else if (matcher.group(TokenType.DOT.name()) != null) {
 				tokens.add(new Token(TokenType.DOT, matcher.group(TokenType.DOT.name())));
+				strIndex = matcher.end();
+				continue;
+                        } else if (matcher.group(TokenType.TXT.name()) != null) {
+				tokens.add(new Token(TokenType.TXT, matcher.group(TokenType.TXT.name())));
 				strIndex = matcher.end();
 				continue;
 			} else if (matcher.group(TokenType.SEMICOLON.name()) != null) {

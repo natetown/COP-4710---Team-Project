@@ -1,4 +1,4 @@
-//package tsqlx;
+package tsqlx;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

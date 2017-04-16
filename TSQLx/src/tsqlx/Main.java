@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Main {
     
     public static void main(String[] args) throws IOException {
-        String userInput = "INSERT INTO REEE; VALUES(123, 456);";
+        String userInput = "tselect (abc) from tn where x >= 99;";
         BufferedWriter bw = null;
         FileWriter fw = null;
         final String FILENAME = "lexerOuput.txt";
@@ -26,6 +26,7 @@ public class Main {
             bw.write(token.type + " --> "+ token.data +"\n");
         }
         System.out.println("Done");
+        
         DML dtest = new DML();
         dtest.DMLstart(tokens);
         if (bw != null)
