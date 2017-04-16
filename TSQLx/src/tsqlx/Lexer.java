@@ -23,8 +23,8 @@ public enum TokenType {
 	WHITESPACE("[ \t\f\r\n]+"), LPAREN("\\("), RPAREN("\\)"), CREATE("CREATE\\s"), DROP("DROP\\s"),DATETYPE("DATE"),
 	DATABASE("DATABASE\\s"), SAVE("SAVE\\s"), LOAD("LOAD\\s"), COMMA(","), TABLE("TABLE\\s"), INSERT("INSERT\\s"),
 	CONVERT("CONVERT\\s"), INPUT("INPUT\\s"), DELETE("DELETE\\s"), FROM("FROM\\s"), INTO("INTO\\s"), VALUES("VALUES"),
-	AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("tselect\\s"), RELOP("<=|>=|!=|=|<|>"), WHERE("WHERE\\s"),
-	STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("decimal"), STRLITERAL("'(.*?)'"),
+	AND("AND"),OR("OR"),AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("tselect\\s"), RELOP("<=|>=|!=|=|<|>"),
+    WHERE("WHERE\\s"),STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("decimal"),STRLITERAL("'(.*?)')",
 	LBRACK("\\["), RBRACK("\\]"), NOTNULL("not null|notnull"), XSD("xsd\\s"), XML("xml"), DOT("\\."), TXT("txt\\s"),
 	SEMICOLON(";"), DATE("(0?[1-9]|1[012])/(0?[1-9]|[12][0-9]|3[01])/([19|20]?\\d{2,})"), NUMBER("-?[0-9]+"), 
 	ID("\\p{Alpha}+[[_]?\\p{Alnum}]+"), ERROR(".+");
@@ -100,6 +100,16 @@ public static ArrayList<Token> lex(String input) {
         } else if (matcher.group(TokenType.TXT.name()) != null) {
             //add to the Token array
             tokens.add(new Token(TokenType.TXT, matcher.group(TokenType.TXT.name())));
+            strIndex = matcher.end();
+            continue;
+        } else if (matcher.group(TokenType.AND.name()) != null) {
+            //add to the Token array
+            tokens.add(new Token(TokenType.AND, matcher.group(TokenType.AND.name())));
+            strIndex = matcher.end();
+            continue;
+        } else if (matcher.group(TokenType.OR.name()) != null) {
+            //add to the Token array
+            tokens.add(new Token(TokenType.OR, matcher.group(TokenType.OR.name())));
             strIndex = matcher.end();
             continue;
             
