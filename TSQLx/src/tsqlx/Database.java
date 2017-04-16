@@ -242,6 +242,7 @@ public static Document createDatabase(String databaseName){
             Document doc = db.newDocument();
             Element database = doc.createElement(databaseName);
             doc.appendChild(database);
+            System.out.println("Your database, " + databaseName + ", has been created.");
             return doc;
             } catch(Exception ex){
             System.out.println(ex.getMessage());
@@ -261,7 +262,7 @@ try {
     else{
     databaseFileList.add(databaseFileName);
     saveDataBaseFileListPerm(databaseFileList);
-    System.out.println("Your database, " + databaseName + ", has been created.");
+    System.out.println("Your database, " + databaseName + ", has been saved for the first time.");
     } 
     // Use a Transformer for output
     TransformerFactory tFactory =
@@ -308,30 +309,51 @@ public static void dropDatabase(String databaseName){
    //Delete file and delete name from hashset
    boolean success = (new File(databaseFileName)).delete();
    databaseFileList.remove(databaseFileName);
+   saveDataBaseFileListPerm(databaseFileList);
       }
    else{
    System.out.println("The specified table doesn't exist.");
    }
-
 }
 
-public static void createTable(){
-
+public static void commit(Document DOM){
+try {
+    String databaseName = DOM.getFirstChild().getNodeName();
+    String databaseFileName = databaseName+".xml";
+    PrintWriter outputStream = new PrintWriter(databaseFileName);
+    // Use a Transformer for output
+    TransformerFactory tFactory =
+    TransformerFactory.newInstance();
+    Transformer transformer = tFactory.newTransformer();
+    DOMSource source = new DOMSource(DOM);
+    StreamResult result = new StreamResult(outputStream);
+    transformer.transform(source, result);
+    outputStream.close();
+    System.out.println("Your changes have been committed.");
+    } catch(TransformerException tce){
+    System.out.println("Tramsformer is messed up");
+    } catch(FileNotFoundException Fnfe){
+    System.out.println(Fnfe.getMessage());
+    }
 }
+
+
 //start main
 public static void main(String[] args) {
 Database db = new Database();
 
 //Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
 
- //Document database = createDatabase("somethingelse");
+ Document database = createDatabase("somethingelse");
+ commit(database);
+//saveDatabase(database);
  //db.saveDatabase(database);
  //database = createDatabase("testing");
  //db.saveDatabase(database);
 // //db.saveDatabase(database);
 // //db.saveDatabase(database);
-// //database = createDatabase("testing");
-Document database = loadDatabase("testing");
+//Document database = createDatabase("testing");
+//Document database = loadDatabase("somethingelse");
 //dropDatabase("somethingelse");
 //System.out.println(database.getFirstChild().getNodeName());
 //db.dropDatabase("testing");
