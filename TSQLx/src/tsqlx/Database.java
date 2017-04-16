@@ -337,6 +337,11 @@ try {
     }
 }
 
+public static Document createTable(String tableName, Document database){
+Element newTable = database.createElement(tableName);
+database.getFirstChild().appendChild(newTable);
+return database;
+}
 
 //start main
 public static void main(String[] args) {
@@ -346,6 +351,12 @@ Database db = new Database();
 
  Document database = createDatabase("somethingelse");
  commit(database);
+ database = createTable("team", database);
+  commit(database);
+   database = createTable("another", database);
+  commit(database);
+     database = createTable("hey", database);
+  commit(database);
 //saveDatabase(database);
  //db.saveDatabase(database);
  //database = createDatabase("testing");
