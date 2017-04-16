@@ -25,7 +25,7 @@ public enum TokenType {
 	CONVERT("CONVERT\\s"), INPUT("INPUT\\s"), DELETE("DELETE\\s"), FROM("FROM\\s"), INTO("INTO\\s"), VALUES("VALUES"),
 	AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("TSELECT\\s|tselect\\s"), RELOP("<=|>=|!=|=|<|>"), WHERE("WHERE\\s"),
 	STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("decimal"), STRLITERAL("'(.*?)'"),
-	LBRACK("\\["), RBRACK("\\]"), NOTNULL("notnull\\s"), XSD("xsd\\s"), XML("xml\\s"), DOT("\\."), TXT("txt\\s"),
+	LBRACK("\\["), RBRACK("\\]"), NOTNULL("not null\\s|notnull\\s"), XSD("xsd\\s"), XML("xml\\s"), DOT("\\."), TXT("txt\\s"),
 	SEMICOLON(";"), DATE("(0?[1-9]|1[012])/(0?[1-9]|[12][0-9]|3[01])/([19|20]?\\d{2,})"), NUMBER("-?[0-9]+"), 
 	ID("\\p{Alpha}+[[_]?\\p{Alnum}]?"), ERROR(".+");
 	
