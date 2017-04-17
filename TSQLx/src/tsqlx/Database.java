@@ -561,10 +561,26 @@ return database;
      } catch(IOException ioe){
        System.out.println(ioe.getMessage());
      }
- 
  }
-
 */
+public static void removeChilds(Node node) {
+    while (node.hasChildNodes())
+        node.removeChild(node.getFirstChild());
+}
+
+public static Document delete(String tableName, Document database){
+NodeList table = database.getElementsByTagName(tableName);
+Node matchingTable = table.item(0); 
+if(table.getLength() == 0){
+System.out.println("This table doesn't exist.");
+}
+else{
+removeChilds(matchingTable);
+System.out.println("Your rows have been deleted from " + tableName);
+return database;
+}
+return null;
+}
 //start main
 public static void main(String[] args) {
 Database db = new Database();
@@ -598,7 +614,9 @@ Database db = new Database();
  database = db.insert("team", fields, values, database);
  database = db.insert("team", fields, values, database);
  commit(database);
- selectW(database, "team");
+ database = db.delete("team", database);
+  commit(database);
+ //selectW(database, "team");
 //    database = createTable("another", database);
 //   commit(database);
 //      database = createTable("hey", database);
