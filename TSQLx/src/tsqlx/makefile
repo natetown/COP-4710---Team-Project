@@ -1,32 +1,22 @@
-JCC = javac
-
 JFLAGS = -g
-
+JC = javac
 JRUN = java
+.SUFFIXES: .java .class
+.java.class:
+        $(JC) $(JFLAGS) $*.java
 
-PICO = pico
+CLASSES = \
+        MainMenu.java \
+        Lexer.java \
+        DML.java \
+        Query.java 
 
-default: MainMenu.class
+default: classes
 
-#-------------------------------------
-MainMenu.class: MainMenu.java
-	$(JCC) $(JFLAGS) MainMenu.java
-#-------------------------------------
-#-------------------------------------
-Lexer.class: Lexer.java
-	$(JCC) $(JFLAGS) Lexer.java
-#-------------------------------------
-#-------------------------------------
-DML.class: DML.java
-	$(JCC) $(JFLAGS) DML.java
-#-------------------------------------
-#-------------------------------------
-Query.class: Query.java
-	$(JCC) $(JFLAGS) Query.java
-#-------------------------------------
+classes: $(CLASSES:.java=.class)
+
 clean:
-	$(RM) *.class
-
+        $(RM) *.class
 run:
-	$(JRUN) MainMenu
+        $(JRUN) MainMenu
 

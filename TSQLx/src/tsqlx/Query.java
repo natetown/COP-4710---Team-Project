@@ -14,13 +14,18 @@ import java.util.*;
 public abstract class Query {
     String queryType;
     String tablename;
+    boolean valid;
     
     public void Query(String type) {
         queryType = type;
+        valid = true;
     }
     public void assignTN(String tbl)    {
         //specifies which table to interact with
         tablename = tbl;
+    }
+    public void invalidate()  {
+        valid = false;
     }
     /*
     public static void main(String[] args)   {

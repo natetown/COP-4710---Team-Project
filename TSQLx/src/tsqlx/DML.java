@@ -35,9 +35,15 @@ public class DML {
        
         //for now, only accepting 1 query at a time
         readingWhere = 0;
-        command();
-        //commandList();
         isValid = true;
+        command();
+        if(tokens[currentToken]!=null)  {
+                            rejected("ERROR: content after semicolon");
+                        }
+        //isValid = false whenever rejected() is called
+        if(isValid) {
+            //do something with the Query
+        }
         
         /* ----------------------- TESTS ----------------------------
         // TEST SELECT QUERIES
@@ -160,6 +166,7 @@ public class DML {
                     currentToken++;
                     if(tokens[currentToken].type.toString().contains("SEMICOLON")) {
                         currentToken++;
+                        
                     }
                     else rejected("ERROR: Missing semicolon");
                 }
@@ -604,5 +611,6 @@ public class DML {
     public static void rejected(String error)   {
         System.out.println(error);
         isValid = false;
+        q.invalidate();
     }
 }
