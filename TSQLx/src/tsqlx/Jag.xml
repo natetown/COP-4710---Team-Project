@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<Jag>
+<CUST>
+	<row>
+	<CNO>C1</CNO>
+	<CNAME type="string">Sugar and Spice, CPA</CNAME>
+	<CITY type="string">San Diego</CITY>
+	</row>
+	<row>
+	<CNO>C2</CNO>
+	<CNAME type="string">ABC Products</CNAME>
+	<CITY type="string">New York</CITY>
+	</row>
+	<row>
+	<CNO>C3</CNO>
+	<CNAME type="string">Nachtfliegen</CNAME>
+	<CITY type="string">Philadelphia</CITY>
+	</row>
+	<row>
+	<CNO>C4</CNO>
+	<CNAME type="string">Systems Group</CNAME>
+	<CITY type="string">Chicago</CITY>
+	</row>
+	<row>
+	<CNO>C5</CNO>
+	<CNAME type="string">JTA Inc.</CNAME>
+	<CITY type="string">Norman</CITY>
+	</row>
+</CUST>
+<S>
+	<row>
+	<SNO>S1</SNO>
+	<SNAME type="string">Job</SNAME>
+	<QUOTA>4000</QUOTA>
+	<CITY type="string">Dallas</CITY>
+	</row>
+	<row>
+	<SNO>S2</SNO>
+	<SNAME type="string">Baker</SNAME>
+	<QUOTA>20000</QUOTA>
+	<CITY type="string">Chicago</CITY>
+	</row>
+	<row>
+	<SNO>S3</SNO>
+	<SNAME type="string">Kirby</SNAME>
+	<QUOTA>6000</QUOTA>
+	<CITY type="string">Phoenix</CITY>
+	</row>
+	<row>
+	<SNO>S4</SNO>
+	<SNAME type="string">Sims</SNAME>
+	<QUOTA>3000</QUOTA>
+	<CITY type="string">San Diego</CITY>
+	</row>
+	<row>
+	<SNO>S5</SNO>
+	<SNAME type="string">Jones</SNAME>
+	<QUOTA>30000</QUOTA>
+	<CITY type="string">New York</CITY>
+	</row>
+</S>
+<PRDCT>
+	<row>
+	<PNO>P1</PNO>
+	<PNAME type="string">Modem</PNAME>
+	<COST>350.00</COST>
+	<AVLQTY>100</AVLQTY>
+	</row>
+	<row>
+	<PNO>P2</PNO>
+	<PNAME type="string">Monitor</PNAME>
+	<COST>400</COST>
+	<AVLQTY>45</AVLQTY>
+	</row>
+	<row>
+	<PNO>P3</PNO>
+	<PNAME type="string">Printer</PNAME>
+	<COST>700</COST>
+	<AVLQTY>15</AVLQTY>
+	</row>
+	<row>
+	<PNO>P4</PNO>
+	<PNAME type="string">CPU Cards</PNAME>
+	<COST>2500</COST>
+	<AVLQTY>10</AVLQTY>
+	</row>
+	<row>
+	<PNO>P5</PNO>
+	<PNAME type="string">Disk Unit</PNAME>
+	<COST>700</COST>
+	<AVLQTY>25</AVLQTY>
+	</row>
+	<row>
+	<PNO>P6</PNO>
+	<PNAME type="string">Tape Drive</PNAME>
+	<COST>1200</COST>
+	<AVLQTY>27</AVLQTY>
+	</row>
+</PRDCT>
+<ORDERS>
+	<row>
+	<SNO>S1</SNO>
+	<PNO>P1</PNO>
+	<CNO>C5</CNO>
+	<TTLQTY>4</TTLQTY>
+	</row>
+	<row>
+	<SNO>S1</SNO>
+	<PNO>P3</PNO>
+	<CNO>C1</CNO>
+	<TTLQTY>1</TTLQTY>
+	</row>	
+	<row>
+	<SNO>S1</SNO>
+	<PNO>P3</PNO>
+	<CNO>C5</CNO>
+	<TTLQTY>2</TTLQTY>
+	</row>	
+	<row>
+	<SNO>S2</SNO>
+	<PNO>P1</PNO>
+	<CNO>C1</CNO>
+	<TTLQTY>2</TTLQTY>
+	</row>
+	<row>
+	<SNO>S2</SNO>
+	<PNO>P2</PNO>
+	<CNO>C4</CNO>
+	<TTLQTY>5</TTLQTY>
+	</row>
+	<row>
+	<SNO>S2</SNO>
+	<PNO>P3</PNO>
+	<CNO>C4</CNO>
+	<TTLQTY>5</TTLQTY>
+	</row>
+	<row>
+	<SNO>S2</SNO>
+	<PNO>P4</PNO>
+	<CNO>C4</CNO>
+	<TTLQTY>5</TTLQTY>
+	</row>
+		<row>
+	<SNO>S3</SNO>
+	<PNO>P5</PNO>
+	<CNO>C4</CNO>
+	<TTLQTY>5</TTLQTY>
+	</row>
+		<row>
+	<SNO>S3</SNO>
+	<PNO>P6</PNO>
+	<CNO>C4</CNO>
+	<TTLQTY>2</TTLQTY>
+	</row>
+		<row>
+	<SNO>S5</SNO>
+	<PNO>P2</PNO>
+	<CNO>C2</CNO>
+	<TTLQTY>10</TTLQTY>
+	</row>
+		<row>
+	<SNO>S5</SNO>
+	<PNO>P3</PNO>
+	<CNO>C3</CNO>
+	<TTLQTY>3</TTLQTY>
+	</row>
+		<row>
+	<SNO>S5</SNO>
+	<PNO>P4</PNO>
+	<CNO>C2</CNO>
+	<TTLQTY>10</TTLQTY>
+	</row>
+		<row>
+	<SNO>S5</SNO>
+	<PNO>P5</PNO>
+	<CNO>C2</CNO>
+	<TTLQTY>10</TTLQTY>
+	</row>
+		<row>
+	<SNO>S5</SNO>
+	<PNO>P5</PNO>
+	<CNO>C3</CNO>
+	<TTLQTY>3</TTLQTY>
+	</row>
+		<row>
+	<SNO>S5</SNO>
+	<PNO>P6</PNO>
+	<CNO>C2</CNO>
+	<TTLQTY>2</TTLQTY>
+	</row>
+</ORDERS>
+</Jag>
