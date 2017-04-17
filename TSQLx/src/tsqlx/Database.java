@@ -46,28 +46,102 @@ if(databaseFileListPerm.exists() && !databaseFileListPerm.isDirectory()) {
 }
 }//end database constructor
 
-public static void selectAsterisk(Document database, String tableName){
+public static String printSpaces(int numOfSpaces){
+
+StringBuilder stringBuilder = new StringBuilder();
+for(int i = 0; i<numOfSpaces; i++){
+stringBuilder.append(" ");
+}
+String spaces = stringBuilder.toString();
+return spaces;
+}
+public static void selectT(Document database, String tableName){
    XPath xpath = XPathFactory.newInstance().newXPath();
    try{NodeList resultSet = (NodeList)xpath.compile("//row").evaluate(database, XPathConstants.NODESET);
-      System.out.println(resultSet.getLength());
       
-      
-       for(int i=0; i<resultSet.getLength(); i++){
-            System.out.println(resultSet.item(i).getNodeName());
-               Node currentElement = resultSet.item(i).getFirstChild();
+      final int columnWidth = 25;
+       
+           
+               Node currentElement = resultSet.item(0).getFirstChild();
                while(currentElement!=null){
-               System.out.println(currentElement.getNodeName()+ "  ");
-               System.out.println(currentElement.getTextContent());
+               String elName = currentElement.getNodeName();
+               int elSize =  elName.length();
+               int offset = columnWidth - elSize;
+               System.out.print(currentElement.getNodeName()+ printSpaces(offset));
                currentElement=currentElement.getNextSibling();
-               }
-            
                     } 
+                    System.out.println("");
+                    System.out.println("");
+                    
+                                 for(int i=0; i<resultSet.getLength(); i++){
+                                 Node currentElement2 = resultSet.item(i).getFirstChild();
+                                   while(currentElement2!=null){
+                                    //String elName2 = currentElement2.getNodeName();
+                                    String elName2 = String.format("%-25s", currentElement2.getTextContent());
+                                    // int elSize2 =  elName2.length();
+//                                     int offset2 = columnWidth - elSize2;
+                                    System.out.print(elName2);
+
+                                    currentElement2=currentElement2.getNextSibling();
+                                    } 
+                                   System.out.println("");
+                                   }
           }
       catch(XPathExpressionException xpee){
    System.out.println(xpee.getMessage());
    
    }
    }
+   
+   public static void selectW(Document database, String tableName){
+   XPath xpath = XPathFactory.newInstance().newXPath();
+   try{NodeList resultSet = (NodeList)xpath.compile("//row").evaluate(database, XPathConstants.NODESET);
+      
+      final int columnWidth = 25;
+       
+           
+               Node currentElement = resultSet.item(0).getFirstChild();
+               while(currentElement!=null){
+               String elName = currentElement.getNodeName();
+               if(elName.equals("insertDateTime")){
+               currentElement=currentElement.getNextSibling();
+               }
+               else{
+               int elSize =  elName.length();
+               int offset = columnWidth - elSize;
+               System.out.print(currentElement.getNodeName()+ printSpaces(offset));
+               currentElement=currentElement.getNextSibling();
+               }
+                    } 
+                    System.out.println("");
+                    System.out.println("");
+                    
+                                 for(int i=0; i<resultSet.getLength(); i++){
+                                 Node currentElement2 = resultSet.item(i).getFirstChild();
+                                   while(currentElement2!=null){
+                                   
+                                   if(currentElement2.getNodeName().equals("insertDateTime")){
+                                   currentElement2=currentElement2.getNextSibling();
+                                   }
+                                   else{
+                                    //String elName2 = currentElement2.getNodeName();
+                                    String elName2 = String.format("%-25s", currentElement2.getTextContent());
+                                    // int elSize2 =  elName2.length();
+//                                     int offset2 = columnWidth - elSize2;
+                                    System.out.print(elName2);
+
+                                    currentElement2=currentElement2.getNextSibling();
+                                    }//end else
+                                    } 
+                                   System.out.println("");
+                                   }
+          }
+      catch(XPathExpressionException xpee){
+   System.out.println(xpee.getMessage());
+   
+   }
+
+   }//end class
 /*
 public static void displayResultSet(List<Element> resultSet){
 //Assumes that all attributes are in the same order in the resultSet and that timestamp is last
@@ -86,7 +160,6 @@ System.out.print(currentHeaderField.getNodeName()+ "               ");
 //Prints out each row
 for(int i=0; i<resultSet.size(); i++){
 Node currentRow = resultSet.get(i);
-
 Node currentField = currentRow.getFirstChild();
    while(currentField!=null){
    if(currentHeaderField.getNodeName().equals("insertDateTime")){
@@ -96,9 +169,7 @@ Node currentField = currentRow.getFirstChild();
    System.out.println(currentField.getNodeName());
    }
    }//end inner while loop
-
 }//end outer for loop
-
 }//end displayResultSet
 */
 /*
@@ -375,9 +446,6 @@ try {
 
 public static Document loadDatabase(String databaseName){
    String databaseFileName=databaseName+".xml";
-   for (String s : databaseFileList) {
-    System.out.println(s);
-}
    if(databaseFileList.contains(databaseFileName)){
    //Open file 
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -477,7 +545,7 @@ Element insertTable = (Element)insertTables.item(0);
 insertTable.appendChild(newRow);
 return database;
 }
-
+/*
  public static void input(String insertFileName){
  
  try (BufferedReader br = new BufferedReader(new FileReader(insertFileName))) {
@@ -496,7 +564,7 @@ return database;
  
  }
 
-
+*/
 //start main
 public static void main(String[] args) {
 Database db = new Database();
@@ -509,7 +577,18 @@ Database db = new Database();
  // database = createTable("team", database);
  //database= loadDatabase("database");
  //commit(database);
- /*ArrayList<String> fields = new ArrayList<String>();
+
+ // commit(database);
+//  Element row = (Element)database.getFirstChild().getFirstChild();
+//  NodeList test = (NodeList)database.getFirstChild().getChildNodes();
+
+//Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
+  Document database = createDatabase("test");
+  saveDatabase(database);
+//  commit(database);
+  database = createTable("team", database);
+   commit(database);
+ ArrayList<String> fields = new ArrayList<String>();
  fields.add("yo");
  fields.add("hey");
  ArrayList<String> values = new ArrayList<String>();
@@ -519,15 +598,7 @@ Database db = new Database();
  database = db.insert("team", fields, values, database);
  database = db.insert("team", fields, values, database);
  commit(database);
- Element row = (Element)database.getFirstChild().getFirstChild();
- NodeList test = (NodeList)database.getFirstChild().getChildNodes();
-
-*/
-//Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
-//  Document database = createDatabase("somethingelse");
-//  commit(database);
-//  database = createTable("team", database);
-//   commit(database);
+ selectW(database, "team");
 //    database = createTable("another", database);
 //   commit(database);
 //      database = createTable("hey", database);
@@ -535,6 +606,8 @@ Database db = new Database();
 //   database = dropTable("tem", database);
 //     commit(database);
 // saveDatabase(database);
+// database = createTable("team", database);
+// commit(database);
 //     database = createTable("team", database);
 //     input("teamInsert.txt");
 //     commit(database);
@@ -544,11 +617,11 @@ Database db = new Database();
 // //db.saveDatabase(database);
 // //db.saveDatabase(database);
 //Document database = createDatabase("testing");
-Document database = loadDatabase("somethingelse");
-//db.selectAsterisk(database, "name");
+//Document database = loadDatabase("test");
+//db.selectW(database, "name");
 //dropDatabase("somethingelse");
 //System.out.println(database.getFirstChild().getNodeName());
-db.dropTable("erf", database);
+//db.dropTable("erf", database);
 } //end main
 
 } //end Database
