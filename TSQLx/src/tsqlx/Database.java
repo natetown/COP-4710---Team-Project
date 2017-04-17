@@ -57,7 +57,7 @@ return spaces;
 }
 public static void selectT(Document database, String tableName){
    XPath xpath = XPathFactory.newInstance().newXPath();
-   try{NodeList resultSet = (NodeList)xpath.compile("//row").evaluate(database, XPathConstants.NODESET);
+   try{NodeList resultSet = (NodeList)xpath.compile("//" +tableName + "//row").evaluate(database, XPathConstants.NODESET);
       
       final int columnWidth = 25;
        
@@ -95,7 +95,7 @@ public static void selectT(Document database, String tableName){
    
    public static void selectW(Document database, String tableName){
    XPath xpath = XPathFactory.newInstance().newXPath();
-   try{NodeList resultSet = (NodeList)xpath.compile("//row").evaluate(database, XPathConstants.NODESET);
+   try{NodeList resultSet = (NodeList)xpath.compile("//" +tableName + "//row").evaluate(database, XPathConstants.NODESET);
       
       final int columnWidth = 25;
        
@@ -597,26 +597,29 @@ Database db = new Database();
  // commit(database);
 //  Element row = (Element)database.getFirstChild().getFirstChild();
 //  NodeList test = (NodeList)database.getFirstChild().getChildNodes();
-
+Document database = db.loadDatabase("Jag");
 //Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
-  Document database = createDatabase("test");
-  saveDatabase(database);
+//   Document database = createDatabase("test");
+//   saveDatabase(database);
+// //  commit(database);
+//   database = createTable("team", database);
+//    commit(database);
+//  ArrayList<String> fields = new ArrayList<String>();
+//  fields.add("yo");
+//  fields.add("hey");
+//  ArrayList<String> values = new ArrayList<String>();
+//  values.add("va1");
+//  values.add("va2");
+//  database = db.insert("team", fields, values, database);
+//  database = db.insert("team", fields, values, database);
+//  database = db.insert("team", fields, values, database);
 //  commit(database);
-  database = createTable("team", database);
-   commit(database);
- ArrayList<String> fields = new ArrayList<String>();
- fields.add("yo");
- fields.add("hey");
- ArrayList<String> values = new ArrayList<String>();
- values.add("va1");
- values.add("va2");
- database = db.insert("team", fields, values, database);
- database = db.insert("team", fields, values, database);
- database = db.insert("team", fields, values, database);
- commit(database);
- database = db.delete("team", database);
-  commit(database);
- //selectW(database, "team");
+//  database = db.delete("ORDERS", database);
+//   commit(database);
+ selectW(database, "ORDERS");
+ selectW(database, "CUST");
+ selectW(database, "S");
+ selectW(database, "PRDCT");
 //    database = createTable("another", database);
 //   commit(database);
 //      database = createTable("hey", database);
