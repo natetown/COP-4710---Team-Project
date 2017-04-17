@@ -2,8 +2,19 @@ package tsqlx;
 import java.util.*;
 public abstract class ddl_query{
    String querytype;
+   boolean valid; // is the query valid
    public void ddl_query(String type){
       querytype = type;
+      valid = false; // false by default
+   }
+   public void validate(){
+      valid = true; // valid query
+   }
+   public boolean getValid(){
+      return valid;
+   }
+   public void confirm(){ // confirm status of valid
+      System.out.println("The query is good is "+valid);
    }
 } // end ddl_query
 /**
@@ -13,6 +24,7 @@ public abstract class ddl_query{
 class createQuery extends ddl_query{
    String type;
    String name;
+   
    ArrayList<field> fields;
    public createQuery(){
       fields = new ArrayList<field>();

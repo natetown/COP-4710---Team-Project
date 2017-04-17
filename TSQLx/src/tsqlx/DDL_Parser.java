@@ -6,8 +6,9 @@ import java.io.*;
 This program parses a DDL statement
 */
 class DDL_Parser{
-
- //  static String[] lines = new String[50];
+   /**
+   Global variables for parser 
+   */
    static String[] tokens = new String[100]; // holds the types for each token for parsing
    static String[] values = new String[100]; // holds the values for each token 
    static int P = 0; // position in the parsing process
@@ -35,7 +36,8 @@ class DDL_Parser{
          P = 0; // reset P
          if(stmt(tokens[P]) == true && error == false){ // statement is correct
             System.out.println("Accept"); // print accept message
-           // ((createQuery)q).display();
+            q.validate(); // mark valid as true meaning good query
+            q.confirm();
             if(tokens[0] == "CREATE"){
                ((createQuery)q).display();
                if(((createQuery)q).getType().equals("TABLE")){
@@ -57,8 +59,8 @@ class DDL_Parser{
          } // end if stmt is accepted
          else{
             System.out.println("Reject");
-         
-         }
+            q.confirm();   
+         } // end if stmt is rejected
    } // end parse
    
    public static void printTokens(){ // print the values of the tokens and values array for error handling
@@ -78,15 +80,14 @@ class DDL_Parser{
    */
    
    public static boolean stmt(String s) throws IOException{ // if stmt if syntaxicly correct, return true
-      if(stmtA(s)){
+      if(stmtA(s)){ // syntaxicly correct
       return true;
       }
-      else{
+      else{ // not syntaxicly correct
          return false;
       }
    } // end stmt
    public static boolean stmtA(String s) throws IOException{ // determine stmt type
-    //  System.out.println("stmtA "+ s);
       if(s.equals("CREATE")){ // create stmt
          q = new createQuery(); // make create query
          P++;
@@ -157,50 +158,52 @@ class DDL_Parser{
             }
          }
          else{
+            System.out.println("Error database ID needed");
             return false;
          }
       } // end if DATABASE
       
       else if(s.equals("TABLE")){ // create table command
-     //    ((createQuery)q).setType(s);
-       //  System.out.println(((createQuery)q).getType());
          P++;
          if(tokens[P].equals("ID")){
             ((createQuery)q).setName(values[P]);
-             System.out.println(((createQuery)q).getName());
             P++;
             if(tdec(tokens[P])){ // if tdec returns true good table declaration
-               System.out.println("is it good? "+ tokens[P]);
-               if(tokens[P] == null){
+            //   System.out.println("is it good? "+ tokens[P]);
+               if(tokens[P] == null){ // semicolon missing
                   System.out.println("Error no semicolon");
                   return false;
                }
-               else if(tokens[P].equals("SEMICOLON")){
+               if(tokens[P].equals("SEMICOLON")){
                   return true;
                }
-               else{
+               else{ // stmt ends with no semicolon
+                  System.out.println("Error does not end with semicolon");
                   return false;
                }
       
             }
             // otherwise the stmt is false and is rejected
-            else{
+            else{ // table declaration missing
+               System.out.println("Error no table declaration");
                return false;
             }
          }
-         else{
+         else{ // id not present
+            System.out.println("Error table ID needed here");
             return false;
          }
 
       }
-      else{
+      else{ // create not followed by database or table
+         System.out.println("Error create either a database or table");
          return false;
       }
    } // end cstmt
    
-   public static boolean dstmt(String s) throws IOException{
-      ((dropQuery)q).setType(s);
-      field f = new field();
+   public static boolean dstmt(String s) throws IOException{ // drop statement
+      ((dropQuery)q).setType(s); // database or table
+      field f = new field(); // id of database or table
       if(s.equals("DATABASE")){ // create database command
          P++;
          if(tokens[P].equals("ID")){
@@ -293,11 +296,11 @@ class DDL_Parser{
             ((loadQuery)q).setName(values[P]);
             f.setName(values[P]);
             P++;
-            if(tokens[P] == null){
+            if(tokens[P] == null){ // avoid null pointer with missing semicolo
                System.out.println("Error missing semicolon");
                return false;
             }
-            if(tokens[P].equals("SEMICOLON")){
+            if(tokens[P].equals("SEMICOLON")){ // stmt must end in semicolon
                ((loadQuery)q).addFields(f);
                return true;
             }
@@ -315,74 +318,74 @@ class DDL_Parser{
    } // end lstmt
 
    
-   public static boolean tdec(String s) throws IOException{ // check that tdec is correct
-      System.out.println("tdec "+ s);
-      if(s.equals("LPAREN")){
+   public static boolean tdec(String s) throws IOException{ // check that table declaration is correct
+     // System.out.println("tdec "+ s);
+      if(s.equals("LPAREN")){ // must have an opening paren
          P++;
          if(fieldlist(tokens[P])){ // list of all fields
                if(tokens[P].equals("RPAREN")){ // must have a closing paren
-               //   System.out.println(tokens[P] + " bye");
                   P++;
                   return true;
                }
-               else{
+               else{ // no )
+                  System.out.println("Error table declaration does not end with )");
                   return false;
                }
 
          }
-         else{
+         else{ // no fields
+            System.out.println("Error field list is wrong");
             return false;
          }
       }
-      else{
-            return false;
+      else{ // no ( to start tdec
+         System.out.println("Error illegal start of table declaration. Must start with (");
+         return false;
          }
 
    } // end tdec
    
-   public static boolean fieldlist(String s) throws IOException{
-      System.out.println("fieldlist "+ s);
+   public static boolean fieldlist(String s) throws IOException{ // check that the list of attributes is correct
       if(s.equals("ID")){    
-         if(field(tokens[P])){
-            if(fieldlistA(tokens[P])){
-               System.out.println("good fieldlist "+tokens[P]);
-               System.out.println(tokens[P]);
+         if(field(tokens[P])){ // must have at least one field
+            if(fieldlistA(tokens[P])){ // check for additional fields
+            //   System.out.println("good fieldlist "+tokens[P]);
+              // System.out.println(tokens[P]);
                return true;
             }
-            else{
+            else{ // error with additional attributes
                return false;
             }
 
          }
          else{
-               return false;
+            System.out.println("Error empty fieldlist");
+            return false;
             }
 
       }
       else{
-            return false;
+         System.out.println("Error does table declaration does not begin with ID");
+         return false;
          }
 
    } // end fieldlist
    
-   public static boolean fieldlistA(String s) throws IOException{
-      System.out.println("fieldlistA "+ s);
-      if(s.equals("RPAREN")){
-         System.out.println("FieldlistA complete");
+   public static boolean fieldlistA(String s) throws IOException{ // additional fields
+      if(s.equals("RPAREN")){ // all fields confirmed
          return true;
       }
       
-      else if(s.equals("COMMA")){
+      else if(s.equals("COMMA")){ // more fields
          P++;
          if(field(tokens[P])){
             if(fieldlistA(tokens[P])){
                return true;
             }
             else{
-               System.out.println("fieldlistA fail "+ tokens[P]);
+            //   System.out.println("fieldlistA fail "+ tokens[P]);
                return false;
-            }
-            
+            }    
          }
          else{
             return false;
@@ -390,31 +393,26 @@ class DDL_Parser{
 
       }
       else{
+         System.out.println("Error missing comma");
          return false;
       }
    } // end fieldlistA*/
    
-   public static boolean field(String s) throws IOException{
-      System.out.println("field "+s);
-      field f = new field();
-      if(s.equals("ID"))
+   public static boolean field(String s) throws IOException{ // attribute for a table
+    //  System.out.println("field "+s);
+      field f = new field(); // one field for each attribute
+      if(s.equals("ID")) // must start with ID
       {
-         f.setName(values[P]);
+         f.setName(values[P]); // set attribute name
          P++;
-         if(fieldtype(tokens[P], f)){
-            if(nullA(tokens[P], f))
+         if(fieldtype(tokens[P], f)){ // verify field type
+            if(nullA(tokens[P], f)) // check for not null
             {
-               System.out.println("field is okay");
-               f.display();
-               ((createQuery)q).addFields(f);
-              // System.out.println(((createQuery)q).get(0));
-               count++;
-              // System.out.println(count);
-             //  P++;
+               ((createQuery)q).addFields(f); // add field to query fieldlist
+             //  count++;
                return true;
             }
             else{
-               System.out.println("error in nullA from field");
                return false;
             }
 
@@ -430,10 +428,10 @@ class DDL_Parser{
 
    } // end field
    
-   public static boolean fieldtype(String s, field f) throws IOException{
-      System.out.println("fieldtype "+s);
+   public static boolean fieldtype(String s, field f) throws IOException{ // verify fieldtype
+    //  System.out.println("fieldtype "+s);
       if(s.equals("STRING")){
-         f.setType("character");
+         f.setType(values[P]);
          P++;
          if(tokens[P].equals("LPAREN")){
             P++;
@@ -470,7 +468,7 @@ class DDL_Parser{
 
       } // end if STRING
       else if(s.equals("INTEGER")){ // INT for an integer, no decimal
-         f.setType(s);
+         f.setType(values[P]);
          P++;
          if(tokens[P].equals("LPAREN")){
             if(iLen(tokens[P], f)){
@@ -489,7 +487,7 @@ class DDL_Parser{
             f.setSize(255); // 255 for no set length
             return true;
          }
-          else if(tokens[P].equals("NOT NULL")){
+          else if(tokens[P].equals("NOTNULL")){
             f.setSize(255); // 255 for no set length
             return true;
          }
@@ -500,7 +498,7 @@ class DDL_Parser{
 
       } // end if INT
       else if(s.equals("DEC")){ // DEC for a decimal number
-         f.setType(s);
+         f.setType(values[P]);
          P++;
          if(tokens[P].equals("LPAREN")){
             if(dLen(tokens[P], f)){
@@ -519,7 +517,7 @@ class DDL_Parser{
             f.setSize(255); // 255 for no set length
             return true;
          }
-          else if(tokens[P].equals("NOT NULL")){
+          else if(tokens[P].equals("NOTNULL")){
             f.setSize(255); // 255 for no set length
             return true;
          }
@@ -530,7 +528,7 @@ class DDL_Parser{
 
       } // end Dec
       else if(s.equals("DATETYPE")){ // date type
-         f.setType(s);
+         f.setType(values[P]);
          P++;
          if(date(tokens[P])){
             return true;
@@ -549,13 +547,13 @@ class DDL_Parser{
    } // end fieldtype
    
    public static boolean iLen(String s, field f) throws IOException{ // optional extension for integer length
-      System.out.println("iLen "+ s);
+   //   System.out.println("iLen "+ s);
       if(s.equals("LPAREN")){
          P++;
             if(tokens[P].equals("NUMBER")){
                if(isInteger(values[P]))
                {
-                  f.setSize(Integer.parseInt(values[P]));
+                  f.setSize(Integer.parseInt(values[P])); // set attribute size
                   P++;
                   if(tokens[P].equals("RPAREN")){
                      P++;
@@ -566,7 +564,8 @@ class DDL_Parser{
                      return false;
                   }
             }
-            else{
+            else{ // not an integer
+               System.out.println("Error length must be a positive integer");
                return false;
             }
           } // end if number
@@ -679,7 +678,7 @@ class DDL_Parser{
       
    public static boolean nullA(String s, field f) throws IOException{
       System.out.println("nullA "+s);
-      if(s.equals("NOT NULL")){
+      if(s.equals("NOTNULL")){
          f.setN(true);
          P++;
          return true;
@@ -696,10 +695,9 @@ class DDL_Parser{
    } // end nullA
    
    public static boolean isInteger(String s) throws IOException{
-      System.out.println("check for int "+s);
+   //   System.out.println("check for int "+s);
        for(int i = 0; i < s.length(); i++){
          if(!Character.isDigit(s.charAt(i))){
-            //return false;
             error = true;
             break;
          }
