@@ -20,14 +20,14 @@ public enum TokenType {
 	// Add more token type as necessary, Just make sure ID and Error are at
 	// the end Dont forget match condition in the lex() method
 	// 
-    WHITESPACE("[ \t\f\r\n]+"), LPAREN("\\("), RPAREN("\\)"), CREATE("CREATE\\s"), DROP("DROP\\s"),DATETYPE("DATE"),
-    DATABASE("DATABASE\\s"), SAVE("SAVE\\s"), LOAD("LOAD\\s"), COMMA(","), TABLE("TABLE\\s"), INSERT("INSERT\\s"),
-    CONVERT("CONVERT\\s"), INPUT("INPUT\\s"), DELETE("DELETE\\s"), FROM("FROM\\s"), INTO("INTO\\s"), VALUES("VALUES"),
-    AND("AND"),OR("OR"),AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("tselect\\s"), RELOP("<=|>=|!=|=|<|>"),
+	WHITESPACE("[ \t\f\r\n]+"), LPAREN("\\("), RPAREN("\\)"), CREATE("CREATE\\s"), DROP("DROP\\s"),DATETYPE("DATE"),
+	DATABASE("DATABASE\\s"), SAVE("SAVE\\s"), LOAD("LOAD\\s"), COMMA(","), TABLE("TABLE\\s"), INSERT("INSERT\\s"),
+	CONVERT("CONVERT\\s"), INPUT("INPUT\\s"), DELETE("DELETE\\s"), FROM("FROM\\s"), INTO("INTO\\s"), VALUES("VALUES"),
+	AND("AND"),OR("OR"),AS("AS\\s"), ASTK("\\*"), SELECT("SELECT\\s"), TSELECT("tselect\\s"), RELOP("<=|>=|!=|=|<|>"),
     WHERE("WHERE\\s"),STRING("Character"), DECIMAL("(\\d+\\.\\d+)([eE][-+]?\\d)?"), INTEGER("INTEGER"), DEC("number"),STRLITERAL("'(.*?)'"),
-    LBRACK("\\["), RBRACK("\\]"), NOTNULL("not null|notnull"), XSD("xsd\\s"), XML("xml"), DOT("\\."), TXT("txt\\s"),COMMIT("commit\\s"),
-    SEMICOLON(";"), DATE("(0?[1-9]|1[012])/(0?[1-9]|[12][0-9]|3[01])/([19|20]?\\d{2,})"), NUMBER("-?[0-9]+"),
-    ID("[\\p{Alpha}]+([[[_]?\\p{Alnum}]]+)*"), ERROR(".+");
+	LBRACK("\\["), RBRACK("\\]"), NOTNULL("not null|notnull"), XSD("xsd\\s"), XML("xml"), DOT("\\."), TXT("txt"), COMMIT("commit"),
+	SEMICOLON(";"), DATE("(0?[1-9]|1[012])/(0?[1-9]|[12][0-9]|3[01])/([19|20]?\\d{2,})"), NUMBER("-?[0-9]+"),  //NUMBER("number")
+	ID("[\\p{Alpha}]+([[[_]?\\p{Alnum}]]+)*"), ERROR(".+");
 	
 	public final String pattern;
 	private TokenType(String pattern) {
@@ -271,11 +271,11 @@ public static ArrayList<Token> lex(String input) {
 			tokens.add(new Token(TokenType.DOT, matcher.group(TokenType.DOT.name())));
 			strIndex = matcher.end();
 			continue;
-        } else if (matcher.group(TokenType.COMMIT.name()) != null) {
-            //add to the Token array
-            tokens.add(new Token(TokenType.COMMIT, matcher.group(TokenType.COMMIT.name())));
-            strIndex = matcher.end();
-            continue;
+                } else if (matcher.group(TokenType.COMMIT.name()) != null) {
+			//add to the Token array
+			tokens.add(new Token(TokenType.COMMIT, matcher.group(TokenType.COMMIT.name())));
+			strIndex = matcher.end();
+			continue;
 		} else if (matcher.group(TokenType.SEMICOLON.name()) != null) {
 			//add to the Token array
 			tokens.add(new Token(TokenType.SEMICOLON, matcher.group(TokenType.SEMICOLON.name())));

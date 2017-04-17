@@ -545,7 +545,7 @@ Element insertTable = (Element)insertTables.item(0);
 insertTable.appendChild(newRow);
 return database;
 }
-/*
+
  public static void input(String insertFileName){
  
  try (BufferedReader br = new BufferedReader(new FileReader(insertFileName))) {
@@ -562,7 +562,7 @@ return database;
        System.out.println(ioe.getMessage());
      }
  }
-*/
+
 public static void removeChilds(Node node) {
     while (node.hasChildNodes())
         node.removeChild(node.getFirstChild());
@@ -581,68 +581,69 @@ return database;
 }
 return null;
 }
-//start main
-public static void main(String[] args) {
-Database db = new Database();
 
-//Document database; 
-//database = createDatabase("database");
-//saveDatabase(database);
-//input("teamInsert.txt");
-
- // database = createTable("team", database);
- //database= loadDatabase("database");
- //commit(database);
-
- // commit(database);
-//  Element row = (Element)database.getFirstChild().getFirstChild();
-//  NodeList test = (NodeList)database.getFirstChild().getChildNodes();
-Document database = db.loadDatabase("Jag");
-//Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
-//   Document database = createDatabase("test");
-//   saveDatabase(database);
-// //  commit(database);
-//   database = createTable("team", database);
-//    commit(database);
-//  ArrayList<String> fields = new ArrayList<String>();
-//  fields.add("yo");
-//  fields.add("hey");
-//  ArrayList<String> values = new ArrayList<String>();
-//  values.add("va1");
-//  values.add("va2");
-//  database = db.insert("team", fields, values, database);
-//  database = db.insert("team", fields, values, database);
-//  database = db.insert("team", fields, values, database);
-//  commit(database);
-//  database = db.delete("ORDERS", database);
-//   commit(database);
- selectW(database, "ORDERS");
- selectW(database, "CUST");
- selectW(database, "S");
- selectW(database, "PRDCT");
-//    database = createTable("another", database);
-//   commit(database);
-//      database = createTable("hey", database);
-//   commit(database);
-//   database = dropTable("tem", database);
-//     commit(database);
-// saveDatabase(database);
-// database = createTable("team", database);
-// commit(database);
-//     database = createTable("team", database);
-//     input("teamInsert.txt");
-//     commit(database);
- //db.saveDatabase(database);
- //database = createDatabase("testing");
- //db.saveDatabase(database);
+////start main
+//public static void main(String[] args) {
+//Database db = new Database();
+//
+////Document database; 
+////database = createDatabase("database");
+////saveDatabase(database);
+////input("teamInsert.txt");
+//
+// // database = createTable("team", database);
+// //database= loadDatabase("database");
+// //commit(database);
+//
+// // commit(database);
+////  Element row = (Element)database.getFirstChild().getFirstChild();
+////  NodeList test = (NodeList)database.getFirstChild().getChildNodes();
+//Document database = db.loadDatabase("Jag");
+////Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
+////   Document database = createDatabase("test");
+////   saveDatabase(database);
+//// //  commit(database);
+////   database = createTable("team", database);
+////    commit(database);
+////  ArrayList<String> fields = new ArrayList<String>();
+////  fields.add("yo");
+////  fields.add("hey");
+////  ArrayList<String> values = new ArrayList<String>();
+////  values.add("va1");
+////  values.add("va2");
+////  database = db.insert("team", fields, values, database);
+////  database = db.insert("team", fields, values, database);
+////  database = db.insert("team", fields, values, database);
+////  commit(database);
+////  database = db.delete("ORDERS", database);
+////   commit(database);
+// selectW(database, "ORDERS");
+// selectW(database, "CUST");
+// selectW(database, "S");
+// selectW(database, "PRDCT");
+////    database = createTable("another", database);
+////   commit(database);
+////      database = createTable("hey", database);
+////   commit(database);
+////   database = dropTable("tem", database);
+////     commit(database);
+//// saveDatabase(database);
+//// database = createTable("team", database);
+//// commit(database);
+////     database = createTable("team", database);
+////     input("teamInsert.txt");
+////     commit(database);
 // //db.saveDatabase(database);
+// //database = createDatabase("testing");
 // //db.saveDatabase(database);
-//Document database = createDatabase("testing");
-//Document database = loadDatabase("test");
-//db.selectW(database, "name");
-//dropDatabase("somethingelse");
-//System.out.println(database.getFirstChild().getNodeName());
-//db.dropTable("erf", database);
-} //end main
-
+//// //db.saveDatabase(database);
+//// //db.saveDatabase(database);
+////Document database = createDatabase("testing");
+////Document database = loadDatabase("test");
+////db.selectW(database, "name");
+////dropDatabase("somethingelse");
+////System.out.println(database.getFirstChild().getNodeName());
+////db.dropTable("erf", database);
+//} //end main
+//
 } //end Database
