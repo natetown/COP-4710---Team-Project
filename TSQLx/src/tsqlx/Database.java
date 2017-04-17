@@ -1,11 +1,8 @@
 // Author(s): Nathan Wheeler
 import java.util.*;
 import java.io.*;
-//These are the JAXP APIs used:
-import javax.xml.parsers.DocumentBuilder; 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError; 
-import javax.xml.parsers.ParserConfigurationException;
+//These are the JAXP APIs used: 
+import javax.xml.parsers.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.Transformer;
@@ -16,6 +13,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.*;
 import javax.xml.XMLConstants;
+import javax.xml.xpath.*;
 //These classes are for the exceptions that can be thrown when the XML document is parsed:
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException; 
@@ -30,14 +28,7 @@ import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 //Finally, import the W3C definitions for a DOM, DOM exceptions, entities and nodes:
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
-import org.w3c.dom.Entity;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 
 class Database {
@@ -55,11 +46,34 @@ if(databaseFileListPerm.exists() && !databaseFileListPerm.isDirectory()) {
 }
 }//end database constructor
 
-public static void displayResultSet(NodeList resultSet){
+public static void selectAsterisk(Document database, String tableName){
+   XPath xpath = XPathFactory.newInstance().newXPath();
+   try{NodeList resultSet = (NodeList)xpath.compile("//row").evaluate(database, XPathConstants.NODESET);
+      System.out.println(resultSet.getLength());
+      
+      
+       for(int i=0; i<resultSet.getLength(); i++){
+            System.out.println(resultSet.item(i).getNodeName());
+               Node currentElement = resultSet.item(i).getFirstChild();
+               while(currentElement!=null){
+               System.out.println(currentElement.getNodeName()+ "  ");
+               System.out.println(currentElement.getTextContent());
+               currentElement=currentElement.getNextSibling();
+               }
+            
+                    } 
+          }
+      catch(XPathExpressionException xpee){
+   System.out.println(xpee.getMessage());
+   
+   }
+   }
+/*
+public static void displayResultSet(List<Element> resultSet){
 //Assumes that all attributes are in the same order in the resultSet and that timestamp is last
 //Prints the header row
-Element headerRow = (Element)resultSet.item(0);
-Element currentHeaderField = (Element)headerRow.getFirstChild();
+Node headerRow = resultSet.get(0);
+Node currentHeaderField = headerRow.getFirstChild();
 while(currentHeaderField!=null){
 if(currentHeaderField.getNodeName().equals("insertDateTime")){
 System.out.print("Omitting date Header");
@@ -69,13 +83,11 @@ System.out.print(currentHeaderField.getNodeName()+ "               ");
 }
 //currentHeaderField  = currentRow(i++);
 }//end while
-
-
 //Prints out each row
-for(int i=0; i<resultSet.getLength(); i++){
-Element currentRow = (Element)resultSet.item(i);
+for(int i=0; i<resultSet.size(); i++){
+Node currentRow = resultSet.get(i);
 
-Element currentField = (Element)currentRow.getFirstChild();
+Node currentField = currentRow.getFirstChild();
    while(currentField!=null){
    if(currentHeaderField.getNodeName().equals("insertDateTime")){
    System.out.print("Omitting date");
@@ -88,8 +100,54 @@ Element currentField = (Element)currentRow.getFirstChild();
 }//end outer for loop
 
 }//end displayResultSet
+*/
+/*
+  public static List<Element> convertToStandardResultSet(List<Element> resultSet){
+    //Get the first row and use that structure as the order.
+    ArrayList<String> attributeNames = new ArrayList<String>();
+    Element headerRow = (Element) resultSet.get(0);
+    Element currentHeaderField = (Element) headerRow.getFirstChild();
+    //Add first row's attribute names to the list.
+    while(currentHeaderField!=null){
+    if(currentHeaderField.getNodeName().equals("insertDateTime")){
+    System.out.print("Omitting date Header");
+    }
+    else{
+    attributeNames.add(currentHeaderField.getNodeName());
+    }
+    //currentHeaderField  = currentRow(i++);
+    }//end while
+    //Get all of the rows and add them to the NodeList  
+    List<Element> nodeList = resultSet;  //create a nodeList to store elements temporarilty
+      
+    //loop through all rows and change structure to match first row.
+    
+    for(int i=0; i<resultSet.size(); i++){
+       List<Element> orderedAttList = resultSet;
+       orderedAttList.clear();
+       Element currentRow = (Element) resultSet.get(i);
+       Element currentField = (Element) currentRow.getFirstChild();
+          while(currentField!=null){
+          if(currentHeaderField.getNodeName().equals("insertDateTime")){
+          System.out.print("Omitting date");
+          }
+          else{
+          
+          orderedAttList.add(currentfield);
+         //add to result set
+         //add result set to a Row element
+          
+          }
+          currentField = (Element) currentField.getNextSibling();
+          }//End While
+  
+       currentRow = (Element) resultSet.get(i);
+  }
+  return resultSet;
+  }
+*/
 
-public HashSet<String> readDatabaseFileListPerm(){
+public static HashSet<String> readDatabaseFileListPerm(){
 HashSet<String> dbFList = new HashSet<String>();
 //read databases line by line from file
 try (BufferedReader br = new BufferedReader(new FileReader(databaseFileListPerm))) {
@@ -117,7 +175,7 @@ for (String s : fileList) {
     }
 }
 
-public Document convert(String xmlFileName, String xsdFileName, String fileName) {
+public static Document convert(String xmlFileName, String xsdFileName, String fileName) {
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
    dbf.setIgnoringComments(true);
    dbf.setIgnoringElementContentWhitespace(true);
@@ -141,7 +199,6 @@ public Document convert(String xmlFileName, String xsdFileName, String fileName)
             //Convert Dom into Insert Queries 
             Node database = doc.getFirstChild();
             Node table = database.getFirstChild();
-            System.out.println(table);
             String tableName=table.getNodeName();
             StringBuilder currentInsertQuery = new StringBuilder();
             //Create a new file and open it
@@ -189,7 +246,7 @@ public Document convert(String xmlFileName, String xsdFileName, String fileName)
             	System.out.println("The file wasn't found.");
             }
             //end conversion
-            
+            System.out.println("You file has been successfully converted.");
             return doc;
             } catch(Exception ex){
             System.out.println("Fatal Error: " + ex.getMessage());
@@ -318,6 +375,9 @@ try {
 
 public static Document loadDatabase(String databaseName){
    String databaseFileName=databaseName+".xml";
+   for (String s : databaseFileList) {
+    System.out.println(s);
+}
    if(databaseFileList.contains(databaseFileName)){
    //Open file 
    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -347,6 +407,7 @@ public static void dropDatabase(String databaseName){
    boolean success = (new File(databaseFileName)).delete();
    databaseFileList.remove(databaseFileName);
    saveDataBaseFileListPerm(databaseFileList);
+   System.out.println("You database, " + databaseName +" has been dropped");
       }
    else{
    System.out.println("The specified table doesn't exist.");
@@ -383,11 +444,17 @@ return database;
 
 public static Document dropTable(String tableName, Document database){
 NodeList deletedTables = database.getElementsByTagName(tableName);
+if(deletedTables.getLength() == 0){
+System.out.println("This table doesn't exist.");
+}
+else{
 for (int i = 0; i<deletedTables.getLength(); i++){
 deletedTables.item(i).getParentNode().removeChild(deletedTables.item(i));
 }
 System.out.println("Your table, " + tableName + " has been dropped. Type Commit to save your changes.");
 return database;
+}
+return null;
 }
 
 public static Document insert(String tableName, ArrayList<String> fields, ArrayList<String> values, Document database){
@@ -411,37 +478,38 @@ insertTable.appendChild(newRow);
 return database;
 }
 
-public static void input(String insertFileName){
-
-try (BufferedReader br = new BufferedReader(new FileReader(insertFileName))) {
-    String line;
-    while ((line = br.readLine()) != null) {
-       ArrayList<Lexer.Token> lexerTokens = new ArrayList<Lexer.Token>();
-       lexerTokens = Lexer.lex(line);
-       DML.DMLstart(lexerTokens);
-       //call function 
-    } 
-}     catch(FileNotFoundException fnfe){
-      System.out.println(fnfe.getMessage());
-    } catch(IOException ioe){
-      System.out.println(ioe.getMessage());
-    }
-
-}
+ public static void input(String insertFileName){
+ 
+ try (BufferedReader br = new BufferedReader(new FileReader(insertFileName))) {
+     String line;
+     DML dml = new DML();
+     while ((line = br.readLine()) != null) {
+        ArrayList<Lexer.Token> lexerTokens = Lexer.lex(line);
+        dml.DMLstart(lexerTokens);
+        //call function 
+     } 
+ }     catch(FileNotFoundException fnfe){
+       System.out.println(fnfe.getMessage());
+     } catch(IOException ioe){
+       System.out.println(ioe.getMessage());
+     }
+ 
+ }
 
 
 //start main
 public static void main(String[] args) {
 Database db = new Database();
 
-Document database = createDatabase("database");
-saveDatabase(database);
+//Document database; 
+//database = createDatabase("database");
+//saveDatabase(database);
 //input("teamInsert.txt");
 
- database = createTable("team", database);
-  
-// commit(database);
- ArrayList<String> fields = new ArrayList<String>();
+ // database = createTable("team", database);
+ //database= loadDatabase("database");
+ //commit(database);
+ /*ArrayList<String> fields = new ArrayList<String>();
  fields.add("yo");
  fields.add("hey");
  ArrayList<String> values = new ArrayList<String>();
@@ -454,9 +522,9 @@ saveDatabase(database);
  Element row = (Element)database.getFirstChild().getFirstChild();
  NodeList test = (NodeList)database.getFirstChild().getChildNodes();
 
-
+*/
 //Document DOM = db.convert("teamInsert.xml", "", "teamInsert.txt");
- // Document database = createDatabase("somethingelse");
+//  Document database = createDatabase("somethingelse");
 //  commit(database);
 //  database = createTable("team", database);
 //   commit(database);
@@ -466,17 +534,21 @@ saveDatabase(database);
 //   commit(database);
 //   database = dropTable("tem", database);
 //     commit(database);
-//saveDatabase(database);
+// saveDatabase(database);
+//     database = createTable("team", database);
+//     input("teamInsert.txt");
+//     commit(database);
  //db.saveDatabase(database);
  //database = createDatabase("testing");
  //db.saveDatabase(database);
 // //db.saveDatabase(database);
 // //db.saveDatabase(database);
 //Document database = createDatabase("testing");
-//Document database = loadDatabase("somethingelse");
+Document database = loadDatabase("somethingelse");
+//db.selectAsterisk(database, "name");
 //dropDatabase("somethingelse");
 //System.out.println(database.getFirstChild().getNodeName());
-//db.dropDatabase("testing");
+db.dropTable("erf", database);
 } //end main
 
 } //end Database
