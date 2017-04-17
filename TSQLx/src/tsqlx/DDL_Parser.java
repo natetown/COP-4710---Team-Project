@@ -150,7 +150,12 @@ class DDL_Parser{
                return false;
             }
             if(tokens[P].equals("SEMICOLON")){ // completed database creation
-               return true;
+               if(tokens[P+1] == null){
+                  return true;
+               }
+               else{
+                  return false;
+               }
             }
             else{ // does not end with semicolon
                System.out.println("Error does not end with semicolon");
@@ -175,7 +180,13 @@ class DDL_Parser{
                   return false;
                }
                if(tokens[P].equals("SEMICOLON")){
-                  return true;
+                  if(tokens[P+1] == null){
+                     return true;
+                  }
+                  else{
+                     return false;
+                  }
+
                }
                else{ // stmt ends with no semicolon
                   System.out.println("Error does not end with semicolon");
@@ -219,7 +230,12 @@ class DDL_Parser{
             }
             if(tokens[P].equals("SEMICOLON")){ // completed database creation
                ((dropQuery)q).addFields(f);
-               return true;
+               if(tokens[P+1] == null){
+                  return true;
+               }
+               else{
+                  return false;
+               }
             }
             else{
                return false;
@@ -242,7 +258,13 @@ class DDL_Parser{
 
             if(tokens[P].equals("SEMICOLON")){
                ((dropQuery)q).addFields(f);
-               return true;
+               if(tokens[P+1] == null){
+                  return true;
+               }
+               else{
+                  return false;
+               }
+
             }
             else{
                return false;
@@ -272,7 +294,12 @@ class DDL_Parser{
             }
             if(tokens[P].equals("SEMICOLON")){
                ((saveQuery)q).addFields(f);
-               return true;
+               if(tokens[P+1] == null){
+                  return true;
+               }
+               else{
+                  return false;
+               }
             }
             else{
                return false;
@@ -302,7 +329,12 @@ class DDL_Parser{
             }
             if(tokens[P].equals("SEMICOLON")){ // stmt must end in semicolon
                ((loadQuery)q).addFields(f);
-               return true;
+               if(tokens[P+1] == null){
+                  return true;
+               }
+               else{
+                  return false;
+               }
             }
             else{
                return false;
@@ -320,6 +352,9 @@ class DDL_Parser{
    
    public static boolean tdec(String s) throws IOException{ // check that table declaration is correct
      // System.out.println("tdec "+ s);
+      if(s == null){
+         return false;
+      }
       if(s.equals("LPAREN")){ // must have an opening paren
          P++;
          if(fieldlist(tokens[P])){ // list of all fields
