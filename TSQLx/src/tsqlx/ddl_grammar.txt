@@ -1,0 +1,22 @@
+DDL Grammar    
+Team A1
+// notes: 1. name types are all ID	2. dec is table declaration	3. fields are attributes
+Stmt -> StmtA
+StmtA -> CREATE cstmt|| DROP dstmt || SAVE sstmt || LOAD lstmt
+cstmt -> database dname; || table tname tdec;
+dstmt -> database dname; || table tname;
+sstmt -> database dname;
+lstmt -> database dname;
+tdec -> (fieldlist)
+fieldlist -> field fieldlistA
+fieldlistA -> , field || @
+field -> fieldname fieldtype nullA
+fieldtype -> integer iL || number dL || character(#) || date
+iL -> (#) || @
+dL -> (#dlA) || @
+dLA -> , # || @
+date -> (mm/dd/dateAyy)
+dateA -> yy || @
+nullA -> NOTNULL || @
+# -> positive integer
+@ -> empty
