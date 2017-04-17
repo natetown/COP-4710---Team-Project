@@ -28,4 +28,4 @@ Outputfile -> string . txt
 
 
 
-INSERT INTO table (field1) VALUES ('abc');
+//INSERT INTO table (field1) VALUES ('abc');
