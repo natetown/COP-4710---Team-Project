@@ -2,18 +2,18 @@ DDL Grammar
 // notes: 1. name types are all ID	2. dec is table declaration	3. fields are attributes
 Statement -> StatementA
 StatementA -> CREATE CreateStmt | DROP DropStmt | SAVE SaveStmt | LOAD LoadStmt
-CreateStmt -> DATABASE dname; | table tname Tdec;
+CreateStmt -> DATABASE dname; | table tname Tabledecl;
 DropStmt -> DATABASE dname; | table tname;
 SaveStmt -> DATABASE dname;
 LoadStmt -> DATABASE dname;
-Tdec -> ( Fieldlist )
+TableDecl -> ( Fieldlist )
 Fieldlist -> Field FieldlistA
 FieldlistA -> , Field | EMPTY
 Field -> Fieldname Fieldtype NullA
-Fieldtype -> INTEGER iL | NUMBER dL | CHARACTER(#) | Date
-iL -> ( # ) | EMPTY
-dL -> ( #dlA ) | EMPTY
-dLA -> , # | EMPTY
+Fieldtype -> INTEGER IntLength | NUMBER DigitLength | CHARACTER(#) | Date
+IntLength -> ( # ) | EMPTY
+DigitLength -> ( #DLA ) | EMPTY
+DLA -> , # | EMPTY
 Date -> ( mm /dd/dateAyy )
 DateA -> yy | EMPTY
 NullA -> NOTNULL | EMPTY
